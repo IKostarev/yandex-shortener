@@ -3,7 +3,6 @@ package postgres
 import (
 	"context"
 	"fmt"
-	"github.com/IKostarev/yandex-go-dev/internal/logger"
 	"github.com/IKostarev/yandex-go-dev/internal/utils"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -93,15 +92,20 @@ func (psql *DB) Get(shortURL, corrID string) (string, string) {
 	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 	defer cancel()
 
-	row := psql.db.QueryRow(ctx, `SELECT longurl FROM yandex WHERE shorturl = $1`, shortURL)
+	if corrID == "" {
+		row := psql.db.QueryRow(ctx, `SELECT longurl FROM yandex WHERE shorturl = $1`, shortURL)
 
-	err := row.Scan(&longURL)
-	if err != nil {
-		logger.Errorf("error is Scan data in SELECT Query: %s", err)
-		return "", ""
+		_ = row.Scan(&longURL)
+
+		return longURL, corrID
+	} else {
+
+		row := psql.db.QueryRow(ctx, `SELECT longurl FROM yandex WHERE shorturl = $1 AND correlation = $2`, shortURL, corrID)
+
+		_ = row.Scan(&longURL)
+
+		return longURL, corrID
 	}
-
-	return longURL, corrID
 }
 
 func (psql *DB) Close() error {
