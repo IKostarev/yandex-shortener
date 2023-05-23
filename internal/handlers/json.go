@@ -41,6 +41,7 @@ func (a *App) JSONHandler(w http.ResponseWriter, r *http.Request) {
 		if _, err := w.Write(respContent); err != nil {
 			logger.Errorf("Failed to send URL on json handler: %s", err)
 		}
+		return
 	}
 
 	short, err := a.Storage.Save(req.ServerURL, "")
