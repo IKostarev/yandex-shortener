@@ -149,10 +149,10 @@ func (psql *DB) CheckIsURLExists(longURL string) (string, error) {
 
 	var res string
 
-	err := row.Scan(&res)
-	if err != nil {
-		return "", fmt.Errorf("ошибка при сканировании: %w", err)
-	}
+	_ = row.Scan(&res)
+	//if err != nil {
+	//	return "", fmt.Errorf("ошибка при сканировании: %w", err)
+	//}
 
 	return res, nil
 }

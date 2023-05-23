@@ -49,5 +49,4 @@ func (a *App) CompressHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		logger.Errorf("Failed to send URL: %s", err)
 	}
-
 }
