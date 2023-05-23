@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"github.com/IKostarev/yandex-go-dev/internal/logger"
+	"github.com/IKostarev/yandex-go-dev/internal/storage/database/postgres"
 	"io"
 	"net/http"
 	"net/url"
@@ -15,23 +16,34 @@ func (a *App) CompressHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	short, err := a.Storage.Save(string(body), "")
-	if err != nil {
-		logger.Errorf("storage save is error: %s", err)
-		w.WriteHeader(http.StatusBadRequest) //TODO в будущем переделать на http.StatusInternalServerError
-		return
-	}
+	db := &postgres.DB{}
 
-	long, err := url.JoinPath(a.Config.BaseShortURL, short)
-	if err != nil {
-		logger.Errorf("join path have err: %s", err)
-		w.WriteHeader(http.StatusBadRequest) //TODO в будущем переделать на http.StatusInternalServerError
-		return
-	}
+	check, _ := db.CheckIsURLExists(string(body))
+	if check != "" {
+		w.WriteHeader(http.StatusConflict)
+		_, err = w.Write([]byte(check))
+		if err != nil {
+			logger.Errorf("Failed to send URL: %s", err)
+		}
+	} else {
+		short, err := a.Storage.Save(string(body), "")
+		if err != nil {
+			logger.Errorf("storage save is error: %s", err)
+			w.WriteHeader(http.StatusBadRequest) //TODO в будущем переделать на http.StatusInternalServerError
+			return
+		}
 
-	w.WriteHeader(http.StatusCreated)
-	_, err = w.Write([]byte(long))
-	if err != nil {
-		logger.Errorf("Failed to send URL: %s", err)
+		long, err := url.JoinPath(a.Config.BaseShortURL, short)
+		if err != nil {
+			logger.Errorf("join path have err: %s", err)
+			w.WriteHeader(http.StatusBadRequest) //TODO в будущем переделать на http.StatusInternalServerError
+			return
+		}
+
+		w.WriteHeader(http.StatusCreated)
+		_, err = w.Write([]byte(long))
+		if err != nil {
+			logger.Errorf("Failed to send URL: %s", err)
+		}
 	}
 }

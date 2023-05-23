@@ -3,6 +3,7 @@ package handlers
 import (
 	"encoding/json"
 	"github.com/IKostarev/yandex-go-dev/internal/logger"
+	"github.com/IKostarev/yandex-go-dev/internal/storage/database/postgres"
 	"net/http"
 	"net/url"
 )
@@ -23,6 +24,23 @@ func (a *App) JSONHandler(w http.ResponseWriter, r *http.Request) {
 		logger.Errorf("json decode is error: %s", err)
 		w.WriteHeader(http.StatusBadRequest)
 		return
+	}
+
+	db := &postgres.DB{}
+	check, _ := db.CheckIsURLExists(req.ServerURL)
+	if check != "" {
+		respContent, err := json.Marshal(check)
+		if err != nil {
+			logger.Errorf("json marshal is error: %s", err)
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusConflict)
+		if _, err := w.Write(respContent); err != nil {
+			logger.Errorf("Failed to send URL on json handler: %s", err)
+		}
 	}
 
 	short, err := a.Storage.Save(req.ServerURL, "")
