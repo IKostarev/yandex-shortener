@@ -16,16 +16,18 @@ func (a *App) CompressHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	db := &postgres.DB{}
+	if a.Config.DatabaseDSN != "" {
+		db := &postgres.DB{}
 
-	check, _ := db.CheckIsURLExists(string(body))
-	if check != "" {
-		w.WriteHeader(http.StatusConflict)
-		_, err = w.Write([]byte(check))
-		if err != nil {
-			logger.Errorf("Failed to send URL: %s", err)
+		check, _ := db.CheckIsURLExists(string(body))
+		if check != "" {
+			w.WriteHeader(http.StatusConflict)
+			_, err = w.Write([]byte(check))
+			if err != nil {
+				logger.Errorf("Failed to send URL: %s", err)
+			}
+			return
 		}
-		return
 	}
 
 	short, err := a.Storage.Save(string(body), "")
