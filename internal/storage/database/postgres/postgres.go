@@ -3,6 +3,7 @@ package postgres
 import (
 	"context"
 	"fmt"
+	"github.com/IKostarev/yandex-go-dev/internal/logger"
 	"github.com/IKostarev/yandex-go-dev/internal/utils"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -61,14 +62,13 @@ func (psql *DB) Save(longURL, corrID string) (string, error) {
 
 	sh, err := psql.CheckIsURLExists(longURL)
 	if err != nil {
-		fmt.Println("", err)
-		//logger.Errorf("error in Check Is URL Exists: %s", err)
+		logger.Errorf("error in Check Is URL Exists: %s", err)
 	}
 
 	if sh != "" {
 		err := psql.UpdateDB(sh, longURL, corrID)
 		if err != nil {
-			fmt.Println("", err)
+			logger.Errorf("error update DB: %s", err)
 		}
 
 		return sh, nil
@@ -81,8 +81,6 @@ func (psql *DB) Save(longURL, corrID string) (string, error) {
 	if corrID == "" {
 		corrID = shortURL
 	}
-
-	fmt.Println("SAVE corrID = ", corrID)
 
 	_, err = psql.db.Exec(ctx, `INSERT INTO yandex (id, longurl, shorturl, correlation) VALUES ($1, $2, $3, $4);`, count, longURL, shortURL, corrID)
 	if err != nil {
@@ -99,10 +97,6 @@ func (psql *DB) Get(shortURL, corrID string) (string, string) {
 	defer cancel()
 
 	if corrID == "" {
-		corrID = shortURL
-
-		fmt.Println("GET corrID = ", corrID)
-
 		row := psql.db.QueryRow(ctx, `SELECT longurl FROM yandex WHERE shorturl = $1`, shortURL)
 
 		_ = row.Scan(&longURL)
@@ -163,9 +157,6 @@ func (psql *DB) CheckIsURLExists(longURL string) (string, error) {
 	var res string
 
 	_ = row.Scan(&res)
-	//if err != nil {
-	//	return "", fmt.Errorf("ошибка при сканировании: %w", err)
-	//}
 
 	return res, nil
 }
