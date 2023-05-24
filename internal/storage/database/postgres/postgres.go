@@ -101,8 +101,6 @@ func (psql *DB) Get(shortURL, corrID string) (string, string) {
 	if corrID == "" {
 		corrID = shortURL
 
-		fmt.Println("GET corrID = ", corrID)
-
 		row := psql.db.QueryRow(ctx, `SELECT longurl FROM yandex WHERE shorturl = $1 AND correlation = $2`, shortURL, corrID)
 
 		_ = row.Scan(&longURL)
