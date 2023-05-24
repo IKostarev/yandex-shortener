@@ -3,7 +3,6 @@ package handlers
 import (
 	"encoding/json"
 	"github.com/IKostarev/yandex-go-dev/internal/logger"
-	"github.com/IKostarev/yandex-go-dev/internal/storage/database/postgres"
 	"net/http"
 	"net/url"
 )
@@ -27,11 +26,21 @@ func (a *App) JSONHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if a.Config.DatabaseDSN != "" {
-		db := &postgres.DB{}
+		check, err := a.Storage.CheckIsURLExists(req.ServerURL)
+		if err != nil {
+			logger.Errorf("Failed to CheckIsURLExists URL: %s", err)
+			w.WriteHeader(http.StatusBadRequest)
+		}
 
-		check, _ := db.CheckIsURLExists(req.ServerURL)
 		if check != "" {
-			respContent, err := json.Marshal(check)
+			resp.BaseShortURL, err = url.JoinPath(a.Config.BaseShortURL, check)
+			if err != nil {
+				logger.Errorf("join path have err: %s", err)
+				w.WriteHeader(http.StatusBadRequest)
+				return
+			}
+
+			respContent, err := json.Marshal(resp)
 			if err != nil {
 				logger.Errorf("json marshal is error: %s", err)
 				w.WriteHeader(http.StatusBadRequest)

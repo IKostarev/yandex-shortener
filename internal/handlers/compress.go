@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"github.com/IKostarev/yandex-go-dev/internal/logger"
-	"github.com/IKostarev/yandex-go-dev/internal/storage/database/postgres"
 	"io"
 	"net/http"
 	"net/url"
@@ -17,14 +16,20 @@ func (a *App) CompressHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if a.Config.DatabaseDSN != "" {
-		db := &postgres.DB{}
+		check, err := a.Storage.CheckIsURLExists(string(body))
+		if err != nil {
+			logger.Errorf("Failed to CheckIsURLExists URL: %s", err)
+			w.WriteHeader(http.StatusBadRequest)
+		}
 
-		check, _ := db.CheckIsURLExists(string(body))
 		if check != "" {
+			res, _ := url.JoinPath(a.Config.BaseShortURL, check)
+
 			w.WriteHeader(http.StatusConflict)
-			_, err = w.Write([]byte(check))
+			_, err = w.Write([]byte(res))
 			if err != nil {
 				logger.Errorf("Failed to send URL: %s", err)
+				w.WriteHeader(http.StatusBadRequest)
 			}
 			return
 		}

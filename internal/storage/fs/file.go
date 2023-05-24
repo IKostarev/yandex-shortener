@@ -101,6 +101,10 @@ func (m *Fs) Get(short, corrID string) (string, string) {
 	return m.cacheURL[short], corrID
 }
 
+func (m *Fs) CheckIsURLExists(string) (string, error) {
+	return "", nil
+}
+
 func (m *Fs) Close() error {
 	return m.fh.Close()
 }

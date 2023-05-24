@@ -31,6 +31,10 @@ func (m *Mem) Get(short, corrID string) (string, string) {
 	return m.cacheMemory[short], corrID
 }
 
+func (m *Mem) CheckIsURLExists(string) (string, error) {
+	return "", nil
+}
+
 func (m *Mem) Close() error {
 	return nil
 }
