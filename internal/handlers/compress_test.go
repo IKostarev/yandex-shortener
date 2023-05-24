@@ -23,6 +23,10 @@ func (m *mockStorage) Close() error {
 	return nil
 }
 
+func (m *mockStorage) CheckIsURLExists(string) (string, error) {
+	return "", nil
+}
+
 func (m *mockStorage) Save(_, _ string) (string, error) {
 	return m.saveReturn, m.saveErr
 }
