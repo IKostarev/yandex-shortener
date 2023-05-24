@@ -78,6 +78,12 @@ func (psql *DB) Save(longURL, corrID string) (string, error) {
 
 	_ = s.Scan(&count)
 
+	if corrID == "" {
+		corrID = shortURL
+	}
+
+	fmt.Println("SAVE corrID = ", corrID)
+
 	_, err = psql.db.Exec(ctx, `INSERT INTO yandex (id, longurl, shorturl, correlation) VALUES ($1, $2, $3, $4);`, count, longURL, shortURL, corrID)
 	if err != nil {
 		return "", fmt.Errorf("error is INSERT data in database: %w", err)
@@ -93,13 +99,16 @@ func (psql *DB) Get(shortURL, corrID string) (string, string) {
 	defer cancel()
 
 	if corrID == "" {
-		row := psql.db.QueryRow(ctx, `SELECT longurl FROM yandex WHERE shorturl = $1`, shortURL)
+		corrID = shortURL
+
+		fmt.Println("GET corrID = ", corrID)
+
+		row := psql.db.QueryRow(ctx, `SELECT longurl FROM yandex WHERE shorturl = $1 AND correlation = $2`, shortURL, corrID)
 
 		_ = row.Scan(&longURL)
 
 		return longURL, corrID
 	} else {
-
 		row := psql.db.QueryRow(ctx, `SELECT longurl FROM yandex WHERE shorturl = $1 AND correlation = $2`, shortURL, corrID)
 
 		_ = row.Scan(&longURL)
