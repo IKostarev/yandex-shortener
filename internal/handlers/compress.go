@@ -15,7 +15,7 @@ func (a *App) CompressHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if a.Config.DatabaseDSN != "" {
+	if a.Config.DatabaseDSN != "" { // проверка нужна чтоб отловить когда запущено приложение с бд и чтоб в бд был поиск уже сохраненного body
 		check, err := a.Storage.CheckIsURLExists(string(body))
 		if err != nil {
 			logger.Errorf("Failed to CheckIsURLExists URL: %s", err)

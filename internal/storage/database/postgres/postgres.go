@@ -173,6 +173,6 @@ func (psql *DB) UpdateDB(shortURL, longURL, corrID string) error {
 	return nil
 }
 
-func (psql *DB) Pool() bool {
+func (psql *DB) Ping() bool {
 	return psql.db.Ping(context.Background()) == nil
 }

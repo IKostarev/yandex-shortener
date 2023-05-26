@@ -45,7 +45,7 @@ func (a *App) BatchHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		_, r.CorrelationID = a.Storage.Get(r.ShortURL, item.CorrelationID)
+		// действительно не нужно, уже не помню почему оно тут вообще есть  _, r.CorrelationID = a.Storage.Get(r.ShortURL, item.CorrelationID)
 		resp = append(resp, r)
 	}
 

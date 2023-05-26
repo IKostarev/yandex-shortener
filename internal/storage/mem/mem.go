@@ -38,3 +38,7 @@ func (m *Mem) CheckIsURLExists(string) (string, error) {
 func (m *Mem) Close() error {
 	return nil
 }
+
+func (m *Mem) Ping() bool {
+	return false
+}

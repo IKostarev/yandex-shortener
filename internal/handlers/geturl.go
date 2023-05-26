@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"errors"
-	"fmt"
 	"github.com/IKostarev/yandex-go-dev/internal/logger"
 	"github.com/go-chi/chi/v5"
 	"net/http"
@@ -23,7 +22,7 @@ func (a *App) GetURLHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Println("LOCATION M = ", m)
+	//fmt.Println("LOCATION M = ", m)
 
 	w.Header().Add("Location", m)
 	w.WriteHeader(http.StatusTemporaryRedirect)

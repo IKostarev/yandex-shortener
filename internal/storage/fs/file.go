@@ -108,3 +108,7 @@ func (m *Fs) CheckIsURLExists(string) (string, error) {
 func (m *Fs) Close() error {
 	return m.fh.Close()
 }
+
+func (m *Fs) Ping() bool {
+	return false
+}
