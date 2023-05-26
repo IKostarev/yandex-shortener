@@ -31,6 +31,10 @@ func (m *mockStorage) Save(_, _ string) (string, error) {
 	return m.saveReturn, m.saveErr
 }
 
+func (m *mockStorage) Ping() bool {
+	return false
+}
+
 func TestApp_CompressHandler(t *testing.T) {
 	tests := []struct {
 		name       string
