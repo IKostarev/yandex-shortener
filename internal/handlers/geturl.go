@@ -15,14 +15,12 @@ func (a *App) GetURLHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	m, _ := a.Storage.Get(url, "")
+	m, _ := a.Storage.Get(url, url)
 	if m == "" {
 		logger.Errorf("get url is bad: %s", url)
 		w.WriteHeader(http.StatusBadRequest) //TODO в будущем переделать на http.StatusNotFound
 		return
 	}
-
-	//fmt.Println("LOCATION M = ", m)
 
 	w.Header().Add("Location", m)
 	w.WriteHeader(http.StatusTemporaryRedirect)
