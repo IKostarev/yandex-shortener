@@ -28,13 +28,13 @@ func (a *App) CompressHandler(w http.ResponseWriter, r *http.Request) {
 				w.WriteHeader(http.StatusBadRequest)
 			}
 
+			w.WriteHeader(http.StatusConflict)
 			_, err = w.Write([]byte(res))
 			if err != nil {
 				logger.Errorf("Failed to send URL: %s", err)
 				w.WriteHeader(http.StatusBadRequest)
 			}
 
-			w.WriteHeader(http.StatusConflict)
 			return
 		}
 	}

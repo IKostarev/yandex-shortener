@@ -30,10 +30,17 @@ func (a *App) BatchHandler(w http.ResponseWriter, r *http.Request) {
 	for _, item := range req {
 		var r URLsResponse
 
-		short, _ := a.Storage.CheckIsURLExists(item.OriginalURL) //TODO handle error
+		short, err := a.Storage.CheckIsURLExists(item.OriginalURL)
+		if err != nil {
+			logger.Errorf("error CheckIsURLExists on BatchHandler: %s", err)
+		}
+
 		if short != "" {
 			r.CorrelationID = item.CorrelationID
-			r.ShortURL, _ = url.JoinPath(a.Config.BaseShortURL, short) //TODO handle error
+			r.ShortURL, err = url.JoinPath(a.Config.BaseShortURL, short)
+			if err != nil {
+				logger.Errorf("error JoinPath on BatchHandler: %s", err)
+			}
 
 			resp = append(resp, r)
 			w.WriteHeader(http.StatusConflict)
