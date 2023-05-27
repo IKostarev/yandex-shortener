@@ -93,11 +93,7 @@ func (psql *DB) Get(shortURL, corrID string) (string, string) {
 
 func (psql *DB) Close() error {
 	psql.db.Close()
-	//if err := psql.db.Close; err != nil {
-	//	logger.Errorf("error close db: %s", err)
-	//}
-
-	return nil //TODO заглушка на будущее, кажется что в бд этот метод вообще не нужен
+	return nil
 }
 func (psql *DB) createTable() error {
 	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
@@ -144,18 +140,6 @@ func (psql *DB) CheckIsURLExists(longURL string) (string, error) {
 
 	return res, nil
 }
-
-//func (psql *DB) UpdateDB(shortURL, longURL, corrID string) error {
-//	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
-//	defer cancel()
-//
-//	_, err := psql.db.Exec(ctx, `UPDATE yandex SET shorturl = $1 WHERE longurl = $2 OR correlation = $3;`, shortURL, longURL, corrID)
-//	if err != nil {
-//		return fmt.Errorf("error is INSERT data in database: %w", err)
-//	}
-//
-//	return nil
-//}
 
 func (psql *DB) Ping() bool {
 	return psql.db.Ping(context.Background()) == nil
