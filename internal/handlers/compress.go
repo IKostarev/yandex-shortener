@@ -16,24 +16,40 @@ func (a *App) CompressHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if a.Config.DatabaseDSN != "" {
-		if err := a.checkURLExistsAndRespond(w, body); err != nil {
-			logger.Errorf("error checking URL existence: %s", err)
-			w.WriteHeader(http.StatusInternalServerError)
+		short, err := a.Storage.CheckIsURLExists(string(body))
+		if err != nil {
+			logger.Errorf("error is CheckIsURLExists: %s", err)
+		}
+
+		if short != "" {
+			res, err := url.JoinPath(a.Config.BaseShortURL, short)
+			if err != nil {
+				logger.Errorf("error is JoinPath: %s", err)
+				w.WriteHeader(http.StatusBadRequest)
+			}
+
+			_, err = w.Write([]byte(res))
+			if err != nil {
+				logger.Errorf("Failed to send URL: %s", err)
+				w.WriteHeader(http.StatusBadRequest)
+			}
+
+			w.WriteHeader(http.StatusConflict)
 			return
 		}
 	}
 
 	short, err := a.Storage.Save(string(body), "")
 	if err != nil {
-		logger.Errorf("storage save error: %s", err)
-		w.WriteHeader(http.StatusInternalServerError)
+		logger.Errorf("storage save is error: %s", err)
+		w.WriteHeader(http.StatusBadRequest) //TODO в будущем переделать на http.StatusInternalServerError
 		return
 	}
 
 	long, err := url.JoinPath(a.Config.BaseShortURL, short)
 	if err != nil {
-		logger.Errorf("join path error: %s", err)
-		w.WriteHeader(http.StatusInternalServerError)
+		logger.Errorf("join path have err: %s", err)
+		w.WriteHeader(http.StatusBadRequest) //TODO в будущем переделать на http.StatusInternalServerError
 		return
 	}
 
@@ -42,31 +58,4 @@ func (a *App) CompressHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		logger.Errorf("Failed to send URL: %s", err)
 	}
-}
-
-func (a *App) checkURLExistsAndRespond(w http.ResponseWriter, body []byte) error {
-	short, err := a.Storage.CheckIsURLExists(string(body))
-	if err != nil {
-		logger.Errorf("error CheckIsURLExists on checkURLExistsAndRespond: %s", err)
-		return err
-	}
-
-	if short != "" {
-		res, err := url.JoinPath(a.Config.BaseShortURL, short)
-		if err != nil {
-			logger.Errorf("error JoinPath on checkURLExistsAndRespond: %s", err)
-			return err
-		}
-
-		_, err = w.Write([]byte(res))
-		if err != nil {
-			logger.Errorf("error Write on checkURLExistsAndRespond: %s", err)
-			return err
-		}
-
-		w.WriteHeader(http.StatusConflict)
-		return nil
-	}
-
-	return nil
 }
