@@ -15,37 +15,22 @@ func (a *App) CompressHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	//if a.Config.DatabaseDSN != "" { // проверка нужна чтоб отловить когда запущено приложение с бд и чтоб в бд был поиск уже сохраненного body
-	//	check, err := a.Storage.CheckIsURLExists(string(body))
-	//	if err != nil {
-	//		logger.Errorf("Failed to CheckIsURLExists URL: %s", err)
-	//		w.WriteHeader(http.StatusBadRequest)
-	//	}
-	//
-	//	if check != "" {
-	//		res, _ := url.JoinPath(a.Config.BaseShortURL, check)
-	//
-	//		w.WriteHeader(http.StatusConflict)
-	//		_, err = w.Write([]byte(res))
-	//		if err != nil {
-	//			logger.Errorf("Failed to send URL: %s", err)
-	//			w.WriteHeader(http.StatusBadRequest)
-	//		}
-	//		return
-	//	}
-	//}
-
 	if a.Config.DatabaseDSN != "" {
-		short, _ := a.Storage.CheckIsURLExists(string(body)) //TODO handle error
+		short, _ := a.Storage.CheckIsURLExists(string(body))
+		if err != nil {
+			logger.Errorf("error is CheckIsURLExists: %s", err)
+		}
+
 		if short != "" {
 			res, _ := url.JoinPath(a.Config.BaseShortURL, short) //TODO handle error
 
-			w.WriteHeader(http.StatusConflict)
 			_, err = w.Write([]byte(res))
 			if err != nil {
 				logger.Errorf("Failed to send URL: %s", err)
 				w.WriteHeader(http.StatusBadRequest)
 			}
+
+			w.WriteHeader(http.StatusConflict)
 			return
 		}
 	}

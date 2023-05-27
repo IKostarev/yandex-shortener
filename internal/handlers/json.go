@@ -25,39 +25,12 @@ func (a *App) JSONHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	//if a.Config.DatabaseDSN != "" {
-	//	check, err := a.Storage.CheckIsURLExists(req.ServerURL)
-	//	if err != nil {
-	//		logger.Errorf("Failed to CheckIsURLExists URL: %s", err)
-	//		w.WriteHeader(http.StatusBadRequest)
-	//	}
-	//
-	//	if check != "" {
-	//		resp.BaseShortURL, err = url.JoinPath(a.Config.BaseShortURL, check)
-	//		if err != nil {
-	//			logger.Errorf("join path have err: %s", err)
-	//			w.WriteHeader(http.StatusBadRequest)
-	//			return
-	//		}
-	//
-	//		respContent, err := json.Marshal(resp)
-	//		if err != nil {
-	//			logger.Errorf("json marshal is error: %s", err)
-	//			w.WriteHeader(http.StatusBadRequest)
-	//			return
-	//		}
-	//
-	//		w.Header().Set("Content-Type", "application/json")
-	//		w.WriteHeader(http.StatusConflict)
-	//		if _, err := w.Write(respContent); err != nil {
-	//			logger.Errorf("Failed to send URL on json handler: %s", err)
-	//		}
-	//		return
-	//	}
-	//}
-
 	if a.Config.DatabaseDSN != "" {
-		short, _ := a.Storage.CheckIsURLExists(req.ServerURL) //TODO handle error
+		short, err := a.Storage.CheckIsURLExists(req.ServerURL)
+		if err != nil {
+			logger.Errorf("error is CheckIsURLExists: %s", err)
+		}
+
 		if short != "" {
 			resp.BaseShortURL, _ = url.JoinPath(a.Config.BaseShortURL, short) //TODO handle error
 
