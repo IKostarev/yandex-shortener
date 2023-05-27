@@ -50,7 +50,7 @@ func (a *App) CompressHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	short, err := a.Storage.Save(string(body), string(body))
+	short, err := a.Storage.Save(string(body), "")
 	if err != nil {
 		logger.Errorf("storage save is error: %s", err)
 		w.WriteHeader(http.StatusBadRequest) //TODO в будущем переделать на http.StatusInternalServerError
