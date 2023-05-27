@@ -81,7 +81,7 @@ func (psql *DB) Get(shortURL, corrID string) (string, string) {
 	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 	defer cancel()
 
-	row := psql.db.QueryRow(ctx, `SELECT longurl FROM yandex WHERE shorturl = $1 AND correlation = $2`, shortURL, corrID)
+	row := psql.db.QueryRow(ctx, `SELECT longurl FROM yandex WHERE shorturl = $1`, shortURL)
 
 	err := row.Scan(&longURL)
 	if err != nil {
