@@ -22,7 +22,7 @@ func (a *App) BatchHandler(w http.ResponseWriter, r *http.Request) {
 	var resp []URLsResponse
 
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		logger.Errorf("json decode is error: %s", err)
+		logger.Errorf("json decode error: %s", err)
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
@@ -30,40 +30,18 @@ func (a *App) BatchHandler(w http.ResponseWriter, r *http.Request) {
 	for _, item := range req {
 		var r URLsResponse
 
-		short, err := a.Storage.CheckIsURLExists(item.OriginalURL)
-		if err != nil {
-			logger.Errorf("error is CheckIsURLExists: %s", err)
+		if err := a.checkURLExistsAndRespondBatch(item, &r); err != nil {
+			logger.Errorf("error checking URL existence: %s", err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
 		}
 
-		if short != "" {
-			r.CorrelationID = item.CorrelationID
-			r.ShortURL, _ = url.JoinPath(a.Config.BaseShortURL, short) //TODO handle error
-
-			resp = append(resp, r)
-			w.WriteHeader(http.StatusConflict)
-		} else {
-			shortURL, err := a.Storage.Save(item.OriginalURL, item.CorrelationID)
-			if err != nil {
-				logger.Errorf("batch save is error: %s", err)
-				w.WriteHeader(http.StatusBadRequest) // TODO: в будущем переделать на http.StatusInternalServerError
-				return
-			}
-
-			r.CorrelationID = item.CorrelationID
-			r.ShortURL, err = url.JoinPath(a.Config.BaseShortURL, shortURL)
-			if err != nil {
-				logger.Errorf("join path has error: %s", err)
-				w.WriteHeader(http.StatusBadRequest) // TODO: в будущем переделать на http.StatusInternalServerError
-				return
-			}
-
-			resp = append(resp, r)
-		}
+		resp = append(resp, r)
 	}
 
 	respContent, err := json.Marshal(resp)
 	if err != nil {
-		logger.Errorf("json marshal is error: %s", err)
+		logger.Errorf("json marshal error: %s", err)
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
@@ -73,4 +51,38 @@ func (a *App) BatchHandler(w http.ResponseWriter, r *http.Request) {
 	if _, err := w.Write(respContent); err != nil {
 		logger.Errorf("Failed to send URLsResponse on batch handler: %s", err)
 	}
+}
+
+func (a *App) checkURLExistsAndRespondBatch(req URLsRequest, resp *URLsResponse) error {
+	short, err := a.Storage.CheckIsURLExists(req.OriginalURL)
+	if err != nil {
+		logger.Errorf("error CheckIsURLExists on checkURLExistsAndRespondBatch: %s", err)
+		return err
+	}
+
+	if short != "" {
+		resp.CorrelationID = req.CorrelationID
+		resp.ShortURL, err = url.JoinPath(a.Config.BaseShortURL, short)
+		if err != nil {
+			logger.Errorf("error JoinPath on checkURLExistsAndRespondBatch: %s", err)
+			return err
+		}
+
+		return nil
+	}
+
+	shortURL, err := a.Storage.Save(req.OriginalURL, req.CorrelationID)
+	if err != nil {
+		logger.Errorf("error Save on checkURLExistsAndRespondBatch: %s", err)
+		return err
+	}
+
+	resp.CorrelationID = req.CorrelationID
+	resp.ShortURL, err = url.JoinPath(a.Config.BaseShortURL, shortURL)
+	if err != nil {
+		logger.Errorf("error JoinPath on checkURLExistsAndRespondBatch: %s", err)
+		return err
+	}
+
+	return nil
 }
