@@ -30,23 +30,15 @@ func (a *App) BatchHandler(w http.ResponseWriter, r *http.Request) {
 	for _, item := range req {
 		var r URLsResponse
 
-		short, err := a.Storage.CheckIsURLExists(item.OriginalURL)
-		if err != nil {
-			logger.Errorf("error is CheckIsURLExists: %s", err)
-		}
-
+		short, _ := a.Storage.CheckIsURLExists(item.OriginalURL) //TODO handle error
 		if short != "" {
 			r.CorrelationID = item.CorrelationID
-			r.ShortURL, err = url.JoinPath(a.Config.BaseShortURL, short)
-			if err != nil {
-				logger.Errorf("error is JoinPath: %s", err)
-				w.WriteHeader(http.StatusBadRequest)
-			}
+			r.ShortURL, _ = url.JoinPath(a.Config.BaseShortURL, short) //TODO handle error
 
 			resp = append(resp, r)
 			w.WriteHeader(http.StatusConflict)
 		} else {
-			shortURL, err := a.Storage.Save(item.OriginalURL, item.CorrelationID)
+			short, err := a.Storage.Save(item.OriginalURL, item.CorrelationID)
 			if err != nil {
 				logger.Errorf("batch save is error: %s", err)
 				w.WriteHeader(http.StatusBadRequest) // TODO: в будущем переделать на http.StatusInternalServerError
@@ -54,7 +46,7 @@ func (a *App) BatchHandler(w http.ResponseWriter, r *http.Request) {
 			}
 
 			r.CorrelationID = item.CorrelationID
-			r.ShortURL, err = url.JoinPath(a.Config.BaseShortURL, shortURL)
+			r.ShortURL, err = url.JoinPath(a.Config.BaseShortURL, short)
 			if err != nil {
 				logger.Errorf("join path has error: %s", err)
 				w.WriteHeader(http.StatusBadRequest) // TODO: в будущем переделать на http.StatusInternalServerError
