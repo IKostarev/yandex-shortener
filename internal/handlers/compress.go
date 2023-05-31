@@ -26,6 +26,7 @@ func (a *App) CompressHandler(w http.ResponseWriter, r *http.Request) {
 			if err != nil {
 				logger.Errorf("error is JoinPath: %s", err)
 				w.WriteHeader(http.StatusBadRequest)
+				return
 			}
 
 			w.WriteHeader(http.StatusConflict)
@@ -33,6 +34,7 @@ func (a *App) CompressHandler(w http.ResponseWriter, r *http.Request) {
 			if err != nil {
 				logger.Errorf("Failed to send URL: %s", err)
 				w.WriteHeader(http.StatusBadRequest)
+				return
 			}
 
 			return

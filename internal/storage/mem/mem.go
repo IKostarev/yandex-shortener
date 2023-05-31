@@ -46,5 +46,5 @@ func (m *Mem) Close() error {
 }
 
 func (m *Mem) Ping() bool {
-	return false
+	return m.cacheMemory == nil
 }

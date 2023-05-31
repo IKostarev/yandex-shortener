@@ -40,6 +40,8 @@ func (a *App) BatchHandler(w http.ResponseWriter, r *http.Request) {
 			r.ShortURL, err = url.JoinPath(a.Config.BaseShortURL, short)
 			if err != nil {
 				logger.Errorf("error JoinPath on BatchHandler: %s", err)
+				w.WriteHeader(http.StatusBadRequest) // TODO: в будущем переделать на http.StatusInternalServerError
+				return
 			}
 
 			resp = append(resp, r)

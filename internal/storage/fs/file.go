@@ -116,5 +116,5 @@ func (m *Fs) Close() error {
 }
 
 func (m *Fs) Ping() bool {
-	return false
+	return m.fh == nil
 }

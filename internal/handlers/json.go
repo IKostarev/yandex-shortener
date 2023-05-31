@@ -36,6 +36,7 @@ func (a *App) JSONHandler(w http.ResponseWriter, r *http.Request) {
 			if err != nil {
 				logger.Errorf("error is JoinPath: %s", err)
 				w.WriteHeader(http.StatusBadRequest)
+				return
 			}
 
 			respContent, err := json.Marshal(resp)

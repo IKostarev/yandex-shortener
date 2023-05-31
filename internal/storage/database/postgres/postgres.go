@@ -16,17 +16,17 @@ type DB struct {
 }
 
 func NewPostgresDB(addrConn string) (*DB, error) {
-	conn, err := pgxpool.ParseConfig(addrConn)
+	cfg, err := pgxpool.ParseConfig(addrConn)
 	if err != nil {
 		return nil, fmt.Errorf("error parse config: %w", err)
 	}
 
-	conn.AfterConnect = func(ctx context.Context, conn *pgx.Conn) error {
+	cfg.AfterConnect = func(ctx context.Context, conn *pgx.Conn) error {
 		uuid.Register(conn.TypeMap())
 		return nil
 	}
 
-	db, err := pgxpool.NewWithConfig(context.Background(), conn)
+	db, err := pgxpool.NewWithConfig(context.Background(), cfg)
 	if err != nil {
 		return nil, fmt.Errorf("error new config: %w", err)
 	}
@@ -136,7 +136,7 @@ func (psql *DB) CheckIsURLExists(longURL string) (string, error) {
 
 	err := row.Scan(&res)
 	if err != nil {
-		logger.Errorf("error in Scan res in SELECT query: %s", err)
+		return "", fmt.Errorf("error in Scan res in SELECT query: %w", err)
 	}
 
 	return res, nil
