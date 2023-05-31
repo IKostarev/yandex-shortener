@@ -11,12 +11,14 @@ const (
 	serverAddrDefault   = ":8080"
 	baseShortURLDefault = "http://localhost:8080"
 	fileStoragePath     = ""
+	databaseDSN         = ""
 )
 
 type Config struct {
 	ServerAddr      string
 	BaseShortURL    string
 	FileStoragePath string
+	DatabaseDSN     string
 }
 
 func LoadConfig() (Config, error) {
@@ -24,6 +26,7 @@ func LoadConfig() (Config, error) {
 		ServerAddr:      serverAddrDefault,
 		BaseShortURL:    baseShortURLDefault,
 		FileStoragePath: fileStoragePath,
+		DatabaseDSN:     databaseDSN,
 	}
 
 	cfg.loadEnv()
@@ -48,12 +51,17 @@ func (cfg *Config) loadEnv() {
 	if envFileStoragePath := os.Getenv("FILE_STORAGE_PATH"); envFileStoragePath != "" {
 		cfg.FileStoragePath = envFileStoragePath
 	}
+
+	if envDatabaseDSN := os.Getenv("DATABASE_DSN"); envDatabaseDSN != "" {
+		cfg.DatabaseDSN = envDatabaseDSN
+	}
 }
 
 func (cfg *Config) loadFlags() {
 	flag.StringVar(&cfg.ServerAddr, "a", cfg.ServerAddr, "HTTP server address")
 	flag.StringVar(&cfg.BaseShortURL, "b", cfg.BaseShortURL, "Base shortened URL")
 	flag.StringVar(&cfg.FileStoragePath, "f", cfg.FileStoragePath, "File storage path")
+	flag.StringVar(&cfg.DatabaseDSN, "d", cfg.DatabaseDSN, " Database DSN")
 
 	flag.Parse()
 }

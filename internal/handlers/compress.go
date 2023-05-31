@@ -15,7 +15,33 @@ func (a *App) CompressHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	short, err := a.Storage.Save(string(body))
+	if a.Config.DatabaseDSN != "" {
+		short, err := a.Storage.CheckIsURLExists(string(body))
+		if err != nil {
+			logger.Errorf("error is CheckIsURLExists: %s", err)
+		}
+
+		if short != "" {
+			res, err := url.JoinPath(a.Config.BaseShortURL, short)
+			if err != nil {
+				logger.Errorf("error is JoinPath: %s", err)
+				w.WriteHeader(http.StatusBadRequest)
+				return
+			}
+
+			w.WriteHeader(http.StatusConflict)
+			_, err = w.Write([]byte(res))
+			if err != nil {
+				logger.Errorf("Failed to send URL: %s", err)
+				w.WriteHeader(http.StatusBadRequest)
+				return
+			}
+
+			return
+		}
+	}
+
+	short, err := a.Storage.Save(string(body), "")
 	if err != nil {
 		logger.Errorf("storage save is error: %s", err)
 		w.WriteHeader(http.StatusBadRequest) //TODO в будущем переделать на http.StatusInternalServerError

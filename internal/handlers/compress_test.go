@@ -15,16 +15,24 @@ type mockStorage struct {
 	storage    map[string]string
 }
 
-func (m *mockStorage) Get(s string) string {
-	return m.storage[s]
+func (m *mockStorage) Get(s, _ string) (string, string) {
+	return m.storage[s], ""
 }
 
 func (m *mockStorage) Close() error {
 	return nil
 }
 
-func (m *mockStorage) Save(_ string) (string, error) {
+func (m *mockStorage) CheckIsURLExists(string) (string, error) {
+	return "", nil
+}
+
+func (m *mockStorage) Save(_, _ string) (string, error) {
 	return m.saveReturn, m.saveErr
+}
+
+func (m *mockStorage) Ping() bool {
+	return false
 }
 
 func TestApp_CompressHandler(t *testing.T) {

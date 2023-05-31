@@ -1,8 +1,15 @@
 package utils
 
-import "math/rand"
+import (
+	"math/rand"
+	"time"
+)
 
 const letters = 8
+
+func init() {
+	rand.Seed(time.Now().UTC().UnixNano())
+}
 
 func RandomString() string {
 	alphabet := []rune("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz")
