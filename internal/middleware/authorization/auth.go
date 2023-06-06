@@ -10,6 +10,8 @@ import (
 	"time"
 )
 
+type ContextKey string
+
 func UserCookie(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		cookie, _ := r.Cookie("USER") //TODO handle error
@@ -32,7 +34,7 @@ func UserCookie(next http.Handler) http.Handler {
 }
 
 func setNewUser(next http.Handler, w http.ResponseWriter, r *http.Request, user string) {
-	ctx := context.WithValue(r.Context(), "userID", user)
+	ctx := context.WithValue(r.Context(), ContextKey("userID"), user)
 	next.ServeHTTP(w, r.WithContext(ctx))
 }
 
