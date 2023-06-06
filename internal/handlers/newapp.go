@@ -3,6 +3,7 @@ package handlers
 import (
 	"github.com/IKostarev/yandex-go-dev/internal/config"
 	"github.com/IKostarev/yandex-go-dev/internal/logger"
+	"github.com/IKostarev/yandex-go-dev/internal/middleware/authorization"
 	"github.com/IKostarev/yandex-go-dev/internal/middleware/gzip"
 	"github.com/IKostarev/yandex-go-dev/internal/storage"
 	"github.com/go-chi/chi/v5"
@@ -23,6 +24,7 @@ func NewApp(cfg config.Config, store storage.Storage) *App {
 
 	app.Use(gzip.Request)
 	app.Use(gzip.Response)
+	app.Use(authorization.UserCookie)
 
 	app.Route("/", func(r chi.Router) {
 		r.Post("/", logger.RequestLogger(app.CompressHandler))
