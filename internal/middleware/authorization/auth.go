@@ -14,9 +14,18 @@ type ContextKey string
 
 func UserCookie(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		cookie, _ := r.Cookie("USER") //TODO handle error
+		cookie, err := r.Cookie("USER") //TODO handle error
+		if err != nil {
+			w.WriteHeader(http.StatusUnauthorized)
+			setNewUser(next, w, r, createNewUser(w))
+			return
+		}
 
-		payload, _ := base64.StdEncoding.DecodeString(cookie.Value) //TODO handle error
+		payload, err := base64.StdEncoding.DecodeString(cookie.Value) //TODO handle error
+		if err != nil {
+			setNewUser(next, w, r, createNewUser(w))
+			return
+		}
 
 		h := hmac.New(sha256.New, []byte("empty"))
 		h.Write(payload[:16])

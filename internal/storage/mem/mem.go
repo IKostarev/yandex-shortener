@@ -1,7 +1,9 @@
 package mem
 
 import (
+	"github.com/IKostarev/yandex-go-dev/internal/handlers"
 	"github.com/IKostarev/yandex-go-dev/internal/utils"
+	uuID "github.com/google/uuid"
 )
 
 type Mem struct {
@@ -18,7 +20,7 @@ func NewMem() (*Mem, error) {
 	return m, nil
 }
 
-func (m *Mem) Save(long, corrID string) (string, error) {
+func (m *Mem) Save(long, corrID string, user uuID.UUID) (string, error) {
 	short := utils.RandomString()
 
 	m.cacheMemory[short] = long
@@ -29,6 +31,19 @@ func (m *Mem) Save(long, corrID string) (string, error) {
 
 func (m *Mem) Get(short, corrID string) (string, string) {
 	return m.cacheMemory[short], corrID
+}
+
+func (m *Mem) GetUserLinks(_ uuID.UUID) (data []handlers.UserLink, err error) {
+	data = make([]handlers.UserLink, 0)
+
+	for originalURL, shortURL := range m.cacheMemory {
+		data = append(data, handlers.UserLink{
+			OriginalURL: originalURL,
+			ShortURL:    shortURL,
+		})
+	}
+
+	return
 }
 
 func (m *Mem) CheckIsURLExists(longURL string) (string, error) {

@@ -3,8 +3,10 @@ package postgres
 import (
 	"context"
 	"fmt"
+	"github.com/IKostarev/yandex-go-dev/internal/handlers"
 	"github.com/IKostarev/yandex-go-dev/internal/logger"
 	"github.com/IKostarev/yandex-go-dev/internal/utils"
+	uuID "github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	uuid "github.com/vgarvardt/pgx-google-uuid/v5"
@@ -48,7 +50,7 @@ func NewPostgresDB(addrConn string) (*DB, error) {
 	return psql, nil
 }
 
-func (psql *DB) Save(longURL, corrID string) (string, error) {
+func (psql *DB) Save(longURL, corrID string, user uuID.UUID) (string, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 	defer cancel()
 
@@ -67,7 +69,7 @@ func (psql *DB) Save(longURL, corrID string) (string, error) {
 		corrID = shortURL
 	}
 
-	_, err = psql.db.Exec(ctx, `INSERT INTO yandex (id, longurl, shorturl, correlation) VALUES ($1, $2, $3, $4);`, count, longURL, shortURL, corrID)
+	_, err = psql.db.Exec(ctx, `INSERT INTO yandex (id, longurl, shorturl, correlation, user_id) VALUES ($1, $2, $3, $4, $5);`, count, longURL, shortURL, corrID, user)
 	if err != nil {
 		return "", fmt.Errorf("error is INSERT data in database: %w", err)
 	}
@@ -91,6 +93,29 @@ func (psql *DB) Get(shortURL, corrID string) (string, string) {
 	return longURL, corrID
 }
 
+func (psql *DB) GetUserLinks(user uuID.UUID) (data []handlers.UserLink, err error) {
+	ctxL, cancel := context.WithTimeout(context.Background(), 20*time.Second)
+	defer cancel()
+
+	rows, _ := psql.db.Query(ctxL, `SELECT longurl, shorturl FROM yandex WHERE user_id = $1`, user) //TODO handle error
+
+	data = make([]handlers.UserLink, 0)
+
+	for rows.Next() {
+		link := handlers.UserLink{}
+
+		err = rows.Scan(&link.OriginalURL, &link.ShortURL)
+		if err != nil {
+			//TODO handle error
+			return nil, err
+		}
+
+		data = append(data, link)
+	}
+
+	return data, nil
+}
+
 func (psql *DB) Close() error {
 	psql.db.Close()
 	return nil
@@ -103,6 +128,7 @@ func (psql *DB) createTable() error {
 	_, err := psql.db.Exec(ctx,
 		`CREATE TABLE IF NOT EXISTS yandex (
     		id SERIAL PRIMARY KEY,
+    		user_id uuid NOT NULL,
    			longurl VARCHAR(255) NOT NULL,
     		shorturl VARCHAR(255) NOT NULL,
    			correlation VARCHAR(255) NOT NULL);`)

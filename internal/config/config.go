@@ -12,6 +12,7 @@ const (
 	baseShortURLDefault = "http://localhost:8080"
 	fileStoragePath     = ""
 	databaseDSN         = ""
+	cookieKey           = ""
 )
 
 type Config struct {
@@ -19,6 +20,7 @@ type Config struct {
 	BaseShortURL    string
 	FileStoragePath string
 	DatabaseDSN     string
+	CookieKey       []byte
 }
 
 func LoadConfig() (Config, error) {
@@ -27,6 +29,7 @@ func LoadConfig() (Config, error) {
 		BaseShortURL:    baseShortURLDefault,
 		FileStoragePath: fileStoragePath,
 		DatabaseDSN:     databaseDSN,
+		CookieKey:       []byte(cookieKey),
 	}
 
 	cfg.loadEnv()
