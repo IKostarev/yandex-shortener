@@ -103,7 +103,7 @@ func (m *Fs) Get(short, corrID string) (string, string) {
 	return m.cacheURL[short], corrID
 }
 
-func (m *Fs) GetUserLinks(user uuID.UUID) (data []model.UserLink, err error) {
+func (m *Fs) GetUserLinks(_ uuID.UUID) (data []model.UserLink, err error) {
 	return nil, err
 }
 
