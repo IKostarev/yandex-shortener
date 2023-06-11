@@ -55,7 +55,12 @@ func (a *App) JSONHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	short, err := a.Storage.Save(req.ServerURL, "")
+	user, err := getUser(r)
+	if err != nil {
+		logger.Errorf("error parse user uuid is: %s", err)
+	}
+
+	short, err := a.Storage.Save(req.ServerURL, "", user)
 	if err != nil {
 		logger.Errorf("storage save is error: %s", err)
 		w.WriteHeader(http.StatusBadRequest)

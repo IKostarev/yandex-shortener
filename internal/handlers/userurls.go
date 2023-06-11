@@ -4,14 +4,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/IKostarev/yandex-go-dev/internal/middleware/authorization"
+	"github.com/IKostarev/yandex-go-dev/internal/model"
 	"github.com/google/uuid"
 	"net/http"
 )
-
-type UserLink struct {
-	ShortURL    string `json:"short_url"`
-	OriginalURL string `json:"original_url"`
-}
 
 func getUser(r *http.Request) (user uuid.UUID, err error) {
 	userID, ok := r.Context().Value(authorization.ContextKey("userID")).(string)
@@ -27,9 +23,9 @@ func (a *App) GetUserURLs(w http.ResponseWriter, r *http.Request) {
 
 	links, _ := a.Storage.GetUserLinks(user) //TODO handle error
 
-	resp := make([]UserLink, 0)
+	resp := make([]model.UserLink, 0)
 	for _, link := range links {
-		resp = append(resp, UserLink{
+		resp = append(resp, model.UserLink{
 			OriginalURL: link.OriginalURL,
 			ShortURL:    fmt.Sprintf("%s/%s", a.Config.BaseShortURL, link.ShortURL),
 		})

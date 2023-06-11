@@ -3,8 +3,8 @@ package postgres
 import (
 	"context"
 	"fmt"
-	"github.com/IKostarev/yandex-go-dev/internal/handlers"
 	"github.com/IKostarev/yandex-go-dev/internal/logger"
+	"github.com/IKostarev/yandex-go-dev/internal/model"
 	"github.com/IKostarev/yandex-go-dev/internal/utils"
 	uuID "github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
@@ -93,16 +93,16 @@ func (psql *DB) Get(shortURL, corrID string) (string, string) {
 	return longURL, corrID
 }
 
-func (psql *DB) GetUserLinks(user uuID.UUID) (data []handlers.UserLink, err error) {
+func (psql *DB) GetUserLinks(user uuID.UUID) (data []model.UserLink, err error) {
 	ctxL, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 	defer cancel()
 
 	rows, _ := psql.db.Query(ctxL, `SELECT longurl, shorturl FROM yandex WHERE user_id = $1`, user) //TODO handle error
 
-	data = make([]handlers.UserLink, 0)
+	data = make([]model.UserLink, 0)
 
 	for rows.Next() {
-		link := handlers.UserLink{}
+		link := model.UserLink{}
 
 		err = rows.Scan(&link.OriginalURL, &link.ShortURL)
 		if err != nil {

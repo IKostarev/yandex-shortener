@@ -1,7 +1,7 @@
 package mem
 
 import (
-	"github.com/IKostarev/yandex-go-dev/internal/handlers"
+	"github.com/IKostarev/yandex-go-dev/internal/model"
 	"github.com/IKostarev/yandex-go-dev/internal/utils"
 	uuID "github.com/google/uuid"
 )
@@ -20,7 +20,7 @@ func NewMem() (*Mem, error) {
 	return m, nil
 }
 
-func (m *Mem) Save(long, corrID string, user uuID.UUID) (string, error) {
+func (m *Mem) Save(long, corrID string, _ uuID.UUID) (string, error) {
 	short := utils.RandomString()
 
 	m.cacheMemory[short] = long
@@ -33,11 +33,11 @@ func (m *Mem) Get(short, corrID string) (string, string) {
 	return m.cacheMemory[short], corrID
 }
 
-func (m *Mem) GetUserLinks(_ uuID.UUID) (data []handlers.UserLink, err error) {
-	data = make([]handlers.UserLink, 0)
+func (m *Mem) GetUserLinks(_ uuID.UUID) (data []model.UserLink, err error) {
+	data = make([]model.UserLink, 0)
 
 	for originalURL, shortURL := range m.cacheMemory {
-		data = append(data, handlers.UserLink{
+		data = append(data, model.UserLink{
 			OriginalURL: originalURL,
 			ShortURL:    shortURL,
 		})

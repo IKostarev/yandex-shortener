@@ -5,8 +5,8 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/IKostarev/yandex-go-dev/internal/handlers"
 	"github.com/IKostarev/yandex-go-dev/internal/logger"
+	"github.com/IKostarev/yandex-go-dev/internal/model"
 	"github.com/IKostarev/yandex-go-dev/internal/utils"
 	uuID "github.com/google/uuid"
 	"os"
@@ -103,7 +103,7 @@ func (m *Fs) Get(short, corrID string) (string, string) {
 	return m.cacheURL[short], corrID
 }
 
-func (m *Fs) GetUserLinks(user uuID.UUID) (data []handlers.UserLink, err error) {
+func (m *Fs) GetUserLinks(user uuID.UUID) (data []model.UserLink, err error) {
 	return nil, err
 }
 

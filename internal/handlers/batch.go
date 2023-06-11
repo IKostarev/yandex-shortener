@@ -17,11 +17,11 @@ type URLsResponse struct {
 	ShortURL      string `json:"short_url"`
 }
 
-func (a *App) BatchHandler(w http.ResponseWriter, r *http.Request) {
+func (a *App) BatchHandler(w http.ResponseWriter, rq *http.Request) {
 	var req []URLsRequest
 	var resp []URLsResponse
 
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+	if err := json.NewDecoder(rq.Body).Decode(&req); err != nil {
 		logger.Errorf("json decode is error: %s", err)
 		w.WriteHeader(http.StatusBadRequest)
 		return
@@ -47,7 +47,12 @@ func (a *App) BatchHandler(w http.ResponseWriter, r *http.Request) {
 			resp = append(resp, r)
 			w.WriteHeader(http.StatusConflict)
 		} else {
-			short, err := a.Storage.Save(item.OriginalURL, item.CorrelationID)
+			user, err := getUser(rq)
+			if err != nil {
+				logger.Errorf("error parse user uuid is: %s", err)
+			}
+
+			short, err := a.Storage.Save(item.OriginalURL, item.CorrelationID, user)
 			if err != nil {
 				logger.Errorf("batch save is error: %s", err)
 				w.WriteHeader(http.StatusBadRequest) // TODO: в будущем переделать на http.StatusInternalServerError

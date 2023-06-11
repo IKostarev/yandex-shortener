@@ -3,7 +3,7 @@ package storage
 import (
 	"fmt"
 	"github.com/IKostarev/yandex-go-dev/internal/config"
-	"github.com/IKostarev/yandex-go-dev/internal/handlers"
+	"github.com/IKostarev/yandex-go-dev/internal/model"
 	"github.com/IKostarev/yandex-go-dev/internal/storage/database/postgres"
 	"github.com/IKostarev/yandex-go-dev/internal/storage/fs"
 	"github.com/IKostarev/yandex-go-dev/internal/storage/mem"
@@ -13,7 +13,7 @@ import (
 type Storage interface {
 	Save(string, string, uuid.UUID) (string, error)
 	Get(string, string) (string, string)
-	GetUserLinks(uuid.UUID) ([]handlers.UserLink, error)
+	GetUserLinks(uuid.UUID) ([]model.UserLink, error)
 	CheckIsURLExists(string) (string, error)
 	Ping() bool
 	Close() error

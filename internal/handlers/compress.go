@@ -41,7 +41,12 @@ func (a *App) CompressHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	short, err := a.Storage.Save(string(body), "")
+	user, err := getUser(r)
+	if err != nil {
+		logger.Errorf("error parse user uuid is: %s", err)
+	}
+
+	short, err := a.Storage.Save(string(body), "", user)
 	if err != nil {
 		logger.Errorf("storage save is error: %s", err)
 		w.WriteHeader(http.StatusBadRequest) //TODO в будущем переделать на http.StatusInternalServerError
