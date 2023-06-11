@@ -2,6 +2,8 @@ package handlers
 
 import (
 	"github.com/IKostarev/yandex-go-dev/internal/logger"
+	"github.com/IKostarev/yandex-go-dev/internal/middleware/authorization"
+	"github.com/google/uuid"
 	"io"
 	"net/http"
 	"net/url"
@@ -41,7 +43,8 @@ func (a *App) CompressHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	user, err := getUser(r)
+	value := r.Context().Value(authorization.ContextKey("userID")).(string)
+	user, err := uuid.Parse(value)
 	if err != nil {
 		logger.Errorf("error parse user uuid is: %s", err)
 	}

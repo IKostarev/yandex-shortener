@@ -16,6 +16,7 @@ type Fs struct {
 	fh               *os.File
 	cacheURL         map[string]string
 	cacheCorrelation map[string]string
+	cacheByID        map[uuID.UUID]map[string]string
 	count            int64
 }
 
@@ -40,6 +41,7 @@ func NewFs(file *os.File) (*Fs, error) {
 		fh:               file,
 		cacheURL:         make(map[string]string),
 		cacheCorrelation: make(map[string]string),
+		cacheByID:        make(map[uuID.UUID]map[string]string),
 		count:            0,
 	}
 
@@ -69,7 +71,7 @@ func NewFs(file *os.File) (*Fs, error) {
 	return fs, nil
 }
 
-func (m *Fs) Save(long, corrID string, _ uuID.UUID) (string, error) {
+func (m *Fs) Save(long, corrID string, user uuID.UUID) (string, error) {
 	urlData := &URLData{
 		UUID:          fmt.Sprintf("%d", m.count),
 		ShortURL:      utils.RandomString(),
@@ -96,21 +98,44 @@ func (m *Fs) Save(long, corrID string, _ uuID.UUID) (string, error) {
 
 	m.cacheURL[urlData.ShortURL] = urlData.OriginalURL
 	m.cacheCorrelation[urlData.CorrelationID] = urlData.OriginalURL
+	m.cacheByID[user] = map[string]string{urlData.ShortURL: urlData.OriginalURL}
+
 	return urlData.ShortURL, nil
 }
 
-func (m *Fs) Get(short, corrID string) (string, string) {
-	return m.cacheURL[short], corrID
+func (m *Fs) Get(short, corrID string, user uuID.UUID) (string, string) {
+	for id, urls := range m.cacheByID {
+		if id == user {
+			return urls[short], corrID
+		}
+	}
+
+	return "", ""
 }
 
-func (m *Fs) GetUserLinks(_ uuID.UUID) (data []model.UserLink, err error) {
-	return nil, err
+func (m *Fs) GetUserLinks(user uuID.UUID) (data []model.UserLink, err error) {
+	data = make([]model.UserLink, 0)
+
+	for id, urls := range m.cacheByID {
+		if id == user {
+			for short, long := range urls {
+				data = append(data, model.UserLink{
+					OriginalURL: long,
+					ShortURL:    short,
+				})
+			}
+		}
+	}
+
+	return data, nil
 }
 
 func (m *Fs) CheckIsURLExists(longURL string) (string, error) {
-	for long := range m.cacheURL {
-		if long == longURL {
-			return m.cacheURL[longURL], nil
+	for _, urls := range m.cacheByID {
+		for short, long := range urls {
+			if long == longURL {
+				return short, nil
+			}
 		}
 	}
 

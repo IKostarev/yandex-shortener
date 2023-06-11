@@ -7,49 +7,61 @@ import (
 )
 
 type Mem struct {
-	cacheMemory      map[string]string
 	cacheCorrelation map[string]string
+	cacheByID        map[uuID.UUID]map[string]string
 }
 
 func NewMem() (*Mem, error) {
 	m := &Mem{
-		cacheMemory:      make(map[string]string),
 		cacheCorrelation: make(map[string]string),
+		cacheByID:        make(map[uuID.UUID]map[string]string),
 	}
 
 	return m, nil
 }
 
-func (m *Mem) Save(long, corrID string, _ uuID.UUID) (string, error) {
+func (m *Mem) Save(long, corrID string, user uuID.UUID) (string, error) {
 	short := utils.RandomString()
 
-	m.cacheMemory[short] = long
 	m.cacheCorrelation[corrID] = long
+	m.cacheByID[user] = map[string]string{short: long}
 
 	return short, nil
 }
 
-func (m *Mem) Get(short, corrID string) (string, string) {
-	return m.cacheMemory[short], corrID
-}
-
-func (m *Mem) GetUserLinks(_ uuID.UUID) (data []model.UserLink, err error) {
-	data = make([]model.UserLink, 0)
-
-	for originalURL, shortURL := range m.cacheMemory {
-		data = append(data, model.UserLink{
-			OriginalURL: originalURL,
-			ShortURL:    shortURL,
-		})
+func (m *Mem) Get(short, corrID string, user uuID.UUID) (string, string) {
+	for id, urls := range m.cacheByID {
+		if id == user {
+			return urls[short], corrID
+		}
 	}
 
-	return
+	return "", ""
+}
+
+func (m *Mem) GetUserLinks(user uuID.UUID) (data []model.UserLink, err error) {
+	data = make([]model.UserLink, 0)
+
+	for id, urls := range m.cacheByID {
+		if id == user {
+			for short, long := range urls {
+				data = append(data, model.UserLink{
+					OriginalURL: long,
+					ShortURL:    short,
+				})
+			}
+		}
+	}
+
+	return data, nil
 }
 
 func (m *Mem) CheckIsURLExists(longURL string) (string, error) {
-	for long := range m.cacheMemory {
-		if long == longURL {
-			return m.cacheMemory[longURL], nil
+	for _, urls := range m.cacheByID {
+		for short, long := range urls {
+			if long == longURL {
+				return short, nil
+			}
 		}
 	}
 
@@ -61,5 +73,5 @@ func (m *Mem) Close() error {
 }
 
 func (m *Mem) Ping() bool {
-	return m.cacheMemory == nil
+	return m.cacheByID == nil
 }

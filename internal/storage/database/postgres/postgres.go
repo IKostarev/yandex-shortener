@@ -77,13 +77,13 @@ func (psql *DB) Save(longURL, corrID string, user uuID.UUID) (string, error) {
 	return shortURL, nil
 }
 
-func (psql *DB) Get(shortURL, corrID string) (string, string) {
+func (psql *DB) Get(shortURL, corrID string, user uuID.UUID) (string, string) {
 	var longURL string
 
 	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 	defer cancel()
 
-	row := psql.db.QueryRow(ctx, `SELECT longurl FROM yandex WHERE shorturl = $1`, shortURL)
+	row := psql.db.QueryRow(ctx, `SELECT longurl FROM yandex WHERE shorturl = $1 AND user_id = $s`, shortURL, user)
 
 	err := row.Scan(&longURL)
 	if err != nil {

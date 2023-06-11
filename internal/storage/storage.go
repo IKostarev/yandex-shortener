@@ -12,7 +12,7 @@ import (
 
 type Storage interface {
 	Save(string, string, uuid.UUID) (string, error)
-	Get(string, string) (string, string)
+	Get(string, string, uuid.UUID) (string, string)
 	GetUserLinks(uuid.UUID) ([]model.UserLink, error)
 	CheckIsURLExists(string) (string, error)
 	Ping() bool
