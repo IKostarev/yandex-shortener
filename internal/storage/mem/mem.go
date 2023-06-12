@@ -24,6 +24,8 @@ func NewMem() (*Mem, error) {
 func (m *Mem) Save(long, corrID string, user uuID.UUID) (string, error) {
 	short := utils.RandomString()
 
+	fmt.Println("SAVE LONG = ", long)
+
 	m.cacheCorrelation[corrID] = long
 	m.cacheByID[user] = map[string]string{short: long}
 
@@ -33,6 +35,8 @@ func (m *Mem) Save(long, corrID string, user uuID.UUID) (string, error) {
 func (m *Mem) Get(short, corrID string, user uuID.UUID) (string, string) {
 	fmt.Println("GET MEM = ", short)
 	fmt.Println("GET CACHE = ", m.cacheByID)
+	fmt.Println("m.cacheByID[user][short] = ", m.cacheByID[user][short])
+
 	for id, urls := range m.cacheByID {
 		if id == user {
 			return urls[short], corrID
