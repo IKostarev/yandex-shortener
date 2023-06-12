@@ -104,6 +104,8 @@ func (m *Fs) Save(long, corrID string, user uuID.UUID) (string, error) {
 }
 
 func (m *Fs) Get(short, corrID string, user uuID.UUID) (string, string) {
+	fmt.Println("GET FILE  = ", short)
+	fmt.Println("GET CACHE = ", m.cacheByID)
 	for id, urls := range m.cacheByID {
 		if id == user {
 			return urls[short], corrID

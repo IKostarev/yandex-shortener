@@ -78,6 +78,8 @@ func (psql *DB) Save(longURL, corrID string, user uuID.UUID) (string, error) {
 }
 
 func (psql *DB) Get(shortURL, corrID string, user uuID.UUID) (string, string) {
+	fmt.Println("GET POSTGRE = ", shortURL)
+
 	var longURL string
 
 	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
