@@ -23,6 +23,8 @@ func UserCookie(next http.Handler) http.Handler {
 			return
 		}
 
+		fmt.Println("У МЕНЯ ЕСТЬ КУКА !!! ", cookie)
+
 		payload, err := base64.StdEncoding.DecodeString(cookie.Value) //TODO handle error
 		if err != nil {
 			fmt.Println("PAYLOAD IS ERROR = ", cookie)
@@ -40,10 +42,10 @@ func UserCookie(next http.Handler) http.Handler {
 			//setNewUser(next, w, r, createNewUser(w))
 		}
 
-		user, _ := uuid.FromBytes(payload[:16]) //TODO handle error
+		_, _ = uuid.FromBytes(payload[:16]) //TODO handle error
 
 		fmt.Println("дошел до конца IS ERROR = ", cookie)
-		setNewUser(next, w, r, user.String())
+		//setNewUser(next, w, r, user.String())
 	})
 }
 

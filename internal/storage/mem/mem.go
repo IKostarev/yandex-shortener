@@ -41,10 +41,13 @@ func (m *Mem) Get(short, corrID string, user uuID.UUID) (string, string) {
 	for id, urls := range m.cacheByID {
 		fmt.Println("id = ", id)
 		fmt.Println("user = ", user)
-		if id == user {
-			fmt.Println("urls short = ", urls[short])
-			return urls[short], corrID
-		}
+
+		return urls[short], corrID
+
+		//if id == user {
+		//	fmt.Println("urls short = ", urls[short])
+		//	return urls[short], corrID
+		//}
 	}
 
 	return "", ""
