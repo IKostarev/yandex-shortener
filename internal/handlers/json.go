@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/IKostarev/yandex-go-dev/internal/logger"
 	"github.com/IKostarev/yandex-go-dev/internal/middleware/authorization"
 	"github.com/google/uuid"
@@ -58,7 +59,9 @@ func (a *App) JSONHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	value := r.Context().Value(authorization.ContextKey("userID")).(string)
+	fmt.Println("JSON value = ", value)
 	user, err := uuid.Parse(value)
+	fmt.Println("JSON user = ", user)
 	if err != nil {
 		logger.Errorf("error parse user uuid is: %s", err)
 	}

@@ -12,7 +12,9 @@ import (
 
 func (a *App) GetUserURLs(w http.ResponseWriter, r *http.Request) {
 	value := r.Context().Value(authorization.ContextKey("userID")).(string)
+	fmt.Println("GETUSERURL value = ", value)
 	user, err := uuid.Parse(value)
+	fmt.Println("GETUSERURL user = ", user)
 	if err != nil {
 		logger.Errorf("error parse user uuid is: %s", err)
 	}

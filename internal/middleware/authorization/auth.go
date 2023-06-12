@@ -5,6 +5,7 @@ import (
 	"crypto/hmac"
 	"crypto/sha256"
 	"encoding/base64"
+	"fmt"
 	"github.com/google/uuid"
 	"net/http"
 	"time"
@@ -16,14 +17,16 @@ func UserCookie(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		cookie, err := r.Cookie("USER") //TODO handle error
 		if err != nil {
-			w.WriteHeader(http.StatusUnauthorized)
+			fmt.Println("COOKIE IS ERROR = ", cookie)
+			//w.WriteHeader(http.StatusUnauthorized)
 			setNewUser(next, w, r, createNewUser(w))
 			return
 		}
 
 		payload, err := base64.StdEncoding.DecodeString(cookie.Value) //TODO handle error
 		if err != nil {
-			setNewUser(next, w, r, createNewUser(w))
+			fmt.Println("PAYLOAD IS ERROR = ", cookie)
+			//setNewUser(next, w, r, createNewUser(w))
 			return
 		}
 
@@ -33,11 +36,13 @@ func UserCookie(next http.Handler) http.Handler {
 		signed := h.Sum(nil)
 
 		if !hmac.Equal(signed, payload[16:]) {
-			setNewUser(next, w, r, createNewUser(w))
+			fmt.Println("EQUAL IS ERROR = ", cookie)
+			//setNewUser(next, w, r, createNewUser(w))
 		}
 
 		user, _ := uuid.FromBytes(payload[:16]) //TODO handle error
 
+		fmt.Println("дошел до конца IS ERROR = ", cookie)
 		setNewUser(next, w, r, user.String())
 	})
 }
