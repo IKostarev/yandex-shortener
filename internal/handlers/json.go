@@ -68,6 +68,34 @@ func (a *App) JSONHandler(w http.ResponseWriter, r *http.Request) {
 		logger.Errorf("error parse user uuid is: %s", err)
 	}
 
+	ch, err := a.Storage.CheckIsURLExists(req.ServerURL)
+	if err != nil {
+		logger.Errorf("error is CheckIsURLExists: %s", err)
+	}
+
+	if ch != "" {
+		resp.BaseShortURL, err = url.JoinPath(a.Config.BaseShortURL, ch)
+		if err != nil {
+			logger.Errorf("error is JoinPath: %s", err)
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+
+		respContent, err := json.Marshal(resp)
+		if err != nil {
+			logger.Errorf("json marshal is error: %s", err)
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusConflict)
+		if _, err := w.Write(respContent); err != nil {
+			logger.Errorf("Failed to send URL on json handler: %s", err)
+		}
+		return
+	}
+
 	fmt.Println("72 СТРОКА Я ЗДЕСЬ")
 
 	short, err := a.Storage.Save(req.ServerURL, "", user)

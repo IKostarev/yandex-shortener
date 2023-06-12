@@ -34,6 +34,7 @@ func (a *App) GetUserURLs(w http.ResponseWriter, r *http.Request) {
 	if len(resp) == 0 {
 		w.WriteHeader(http.StatusNoContent)
 	} else {
+		w.WriteHeader(http.StatusCreated)
 		w.Header().Set("content-type", "application/json")
 		_, _ = w.Write(respJSON) //TODO handle error
 	}

@@ -52,6 +52,26 @@ func (a *App) CompressHandler(w http.ResponseWriter, r *http.Request) {
 		logger.Errorf("error parse user uuid is: %s", err)
 	}
 
+	ch, _ := a.Storage.CheckIsURLExists(string(body)) //TODO handle error
+	if ch != "" {
+		res, err := url.JoinPath(a.Config.BaseShortURL, ch)
+		if err != nil {
+			logger.Errorf("error is JoinPath: %s", err)
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+
+		w.WriteHeader(http.StatusConflict)
+		_, err = w.Write([]byte(res))
+		if err != nil {
+			logger.Errorf("Failed to send URL: %s", err)
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+
+		return
+	}
+
 	short, err := a.Storage.Save(string(body), "", user)
 	if err != nil {
 		logger.Errorf("storage save is error: %s", err)
