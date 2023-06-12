@@ -18,7 +18,7 @@ func UserCookie(next http.Handler) http.Handler {
 		cookie, err := r.Cookie("USER") //TODO handle error
 		if err != nil {
 			fmt.Println("COOKIE IS ERROR = ", cookie)
-			w.WriteHeader(http.StatusUnauthorized)
+			//w.WriteHeader(http.StatusUnauthorized)
 			setNewUser(next, w, r, createNewUser(w))
 			return
 		}
