@@ -42,10 +42,10 @@ func UserCookie(next http.Handler) http.Handler {
 			//setNewUser(next, w, r, createNewUser(w))
 		}
 
-		_, _ = uuid.FromBytes(payload[:16]) //TODO handle error
+		user, _ := uuid.FromBytes(payload[:16]) //TODO handle error
 
 		fmt.Println("дошел до конца IS ERROR = ", cookie)
-		//setNewUser(next, w, r, user.String())
+		setNewUser(next, w, r, user.String())
 	})
 }
 
