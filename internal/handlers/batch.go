@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/IKostarev/yandex-go-dev/internal/logger"
 	"net/http"
 	"net/url"
@@ -20,6 +21,13 @@ type URLsResponse struct {
 func (a *App) BatchHandler(w http.ResponseWriter, r *http.Request) {
 	var req []URLsRequest
 	var resp []URLsResponse
+
+	cookie, _ := r.Cookie("ID")
+	if cookie == nil {
+		w.WriteHeader(http.StatusUnauthorized)
+	}
+
+	fmt.Println("BatchHandler COOKIE = ", cookie)
 
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		logger.Errorf("json decode is error: %s", err)

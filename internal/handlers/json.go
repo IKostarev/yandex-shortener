@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/IKostarev/yandex-go-dev/internal/logger"
 	"net/http"
 	"net/url"
@@ -16,6 +17,13 @@ type ResultResponse struct {
 }
 
 func (a *App) JSONHandler(w http.ResponseWriter, r *http.Request) {
+	cookie, _ := r.Cookie("ID")
+	if cookie == nil {
+		w.WriteHeader(http.StatusUnauthorized)
+	}
+
+	fmt.Println("JSONHandler COOKIE = ", cookie)
+
 	var req URLRequest
 	var resp ResultResponse
 

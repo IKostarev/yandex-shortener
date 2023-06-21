@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"github.com/IKostarev/yandex-go-dev/internal/logger"
 	"io"
 	"net/http"
@@ -8,6 +9,13 @@ import (
 )
 
 func (a *App) CompressHandler(w http.ResponseWriter, r *http.Request) {
+	cookie, _ := r.Cookie("ID")
+	if cookie == nil {
+		w.WriteHeader(http.StatusUnauthorized)
+	}
+
+	fmt.Println("CompressHandler COOKIE = ", cookie)
+
 	body, err := io.ReadAll(r.Body)
 	if err != nil || len(body) == 0 {
 		logger.Errorf("body is nil or empty: %s", err)

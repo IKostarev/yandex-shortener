@@ -1,10 +1,18 @@
 package handlers
 
 import (
+	"fmt"
 	"net/http"
 )
 
-func (a *App) PingHandler(w http.ResponseWriter, _ *http.Request) {
+func (a *App) PingHandler(w http.ResponseWriter, r *http.Request) {
+	cookie, _ := r.Cookie("ID")
+	if cookie == nil {
+		w.WriteHeader(http.StatusUnauthorized)
+	}
+
+	fmt.Println("PingHandler COOKIE = ", cookie)
+
 	if !a.Storage.Ping() {
 		w.WriteHeader(http.StatusInternalServerError)
 		return

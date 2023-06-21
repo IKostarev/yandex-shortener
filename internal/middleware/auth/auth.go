@@ -1,7 +1,6 @@
 package auth
 
 import (
-	"fmt"
 	"github.com/google/uuid"
 	"net/http"
 	"time"
@@ -11,15 +10,9 @@ func Cookie(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		cookie, _ := r.Cookie("ID")
 		if cookie == nil {
-			fmt.Println("Cookie = ", cookie)
-
-			fmt.Println("createNewUser(w) = ", createNewUser(w))
-
-			//w.WriteHeader(http.StatusUnauthorized)
-			//return
+			createNewUser(w)
 		}
 
-		fmt.Println("Cookie NOT NIL = ", cookie)
 		next.ServeHTTP(w, r)
 	})
 }

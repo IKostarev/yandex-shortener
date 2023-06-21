@@ -2,12 +2,20 @@ package handlers
 
 import (
 	"errors"
+	"fmt"
 	"github.com/IKostarev/yandex-go-dev/internal/logger"
 	"github.com/go-chi/chi/v5"
 	"net/http"
 )
 
 func (a *App) GetURLHandler(w http.ResponseWriter, r *http.Request) {
+	cookie, _ := r.Cookie("ID")
+	if cookie == nil {
+		w.WriteHeader(http.StatusUnauthorized)
+	}
+
+	fmt.Println("GetURLHandler COOKIE = ", cookie)
+
 	url := chi.URLParam(r, "id")
 	if url == "" {
 		_ = errors.New("url param bad with id")
