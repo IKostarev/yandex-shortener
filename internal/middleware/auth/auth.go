@@ -17,7 +17,7 @@ func Cookie(next http.Handler) http.Handler {
 	})
 }
 
-func CreateNewUser(w http.ResponseWriter) string {
+func CreateNewUser(w http.ResponseWriter) *http.Cookie {
 	user := uuid.New().String()
 
 	newCookie := http.Cookie{
@@ -28,5 +28,5 @@ func CreateNewUser(w http.ResponseWriter) string {
 
 	http.SetCookie(w, &newCookie)
 
-	return user
+	return &newCookie
 }

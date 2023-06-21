@@ -12,7 +12,7 @@ import (
 func (a *App) CompressHandler(w http.ResponseWriter, r *http.Request) {
 	cookie, _ := r.Cookie("ID")
 	if cookie == nil {
-		auth.CreateNewUser(w)
+		cookie = auth.CreateNewUser(w)
 		w.WriteHeader(http.StatusUnauthorized)
 	}
 
