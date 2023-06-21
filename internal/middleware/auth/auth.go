@@ -10,14 +10,14 @@ func Cookie(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		cookie, _ := r.Cookie("ID")
 		if cookie == nil {
-			createNewUser(w)
+			CreateNewUser(w)
 		}
 
 		next.ServeHTTP(w, r)
 	})
 }
 
-func createNewUser(w http.ResponseWriter) string {
+func CreateNewUser(w http.ResponseWriter) string {
 	user := uuid.New().String()
 
 	newCookie := http.Cookie{

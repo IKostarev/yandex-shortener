@@ -2,12 +2,14 @@ package handlers
 
 import (
 	"fmt"
+	"github.com/IKostarev/yandex-go-dev/internal/middleware/auth"
 	"net/http"
 )
 
 func (a *App) PingHandler(w http.ResponseWriter, r *http.Request) {
 	cookie, _ := r.Cookie("ID")
 	if cookie == nil {
+		auth.CreateNewUser(w)
 		w.WriteHeader(http.StatusUnauthorized)
 	}
 
