@@ -3,7 +3,6 @@ package handlers
 import (
 	"encoding/json"
 	"github.com/IKostarev/yandex-go-dev/internal/logger"
-	"github.com/IKostarev/yandex-go-dev/internal/middleware/authorization"
 	"github.com/google/uuid"
 	"net/http"
 	"net/url"
@@ -57,12 +56,12 @@ func (a *App) JSONHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	value := r.Context().Value(authorization.ContextKey("userID")).(string)
-
-	user, err := uuid.Parse(value)
-	if err != nil {
-		logger.Errorf("error parse user uuid is: %s", err)
-	}
+	//value := r.Context().Value(authorization.ContextKey("userID")).(string)
+	//
+	//user, err := uuid.Parse(value)
+	//if err != nil {
+	//	logger.Errorf("error parse user uuid is: %s", err)
+	//}
 
 	ch, err := a.Storage.CheckIsURLExists(req.ServerURL)
 	if err != nil {
@@ -91,6 +90,8 @@ func (a *App) JSONHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
+
+	user := uuid.New()
 
 	short, err := a.Storage.Save(req.ServerURL, "", user)
 	if err != nil {

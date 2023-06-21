@@ -3,20 +3,20 @@ package handlers
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/IKostarev/yandex-go-dev/internal/logger"
-	"github.com/IKostarev/yandex-go-dev/internal/middleware/authorization"
 	"github.com/IKostarev/yandex-go-dev/internal/model"
 	"github.com/google/uuid"
 	"net/http"
 )
 
-func (a *App) GetUserURLs(w http.ResponseWriter, r *http.Request) {
-	value := r.Context().Value(authorization.ContextKey("userID")).(string)
+func (a *App) GetUserURLs(w http.ResponseWriter, _ *http.Request) {
+	//value := r.Context().Value(authorization.ContextKey("userID")).(string)
+	//
+	//user, err := uuid.Parse(value)
+	//if err != nil {
+	//	logger.Errorf("error parse user uuid is: %s", err)
+	//}
 
-	user, err := uuid.Parse(value)
-	if err != nil {
-		logger.Errorf("error parse user uuid is: %s", err)
-	}
+	user := uuid.New()
 
 	links, _ := a.Storage.GetUserLinks(user) //TODO handle error
 

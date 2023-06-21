@@ -3,7 +3,6 @@ package handlers
 import (
 	"encoding/json"
 	"github.com/IKostarev/yandex-go-dev/internal/logger"
-	"github.com/IKostarev/yandex-go-dev/internal/middleware/authorization"
 	"github.com/google/uuid"
 	"net/http"
 	"net/url"
@@ -49,12 +48,13 @@ func (a *App) BatchHandler(w http.ResponseWriter, rq *http.Request) {
 			resp = append(resp, r)
 			w.WriteHeader(http.StatusConflict)
 		} else {
-			value := rq.Context().Value(authorization.ContextKey("userID")).(string)
+			//value := rq.Context().Value(authorization.ContextKey("userID")).(string)
 
-			user, err := uuid.Parse(value)
-			if err != nil {
-				logger.Errorf("error parse user uuid is: %s", err)
-			}
+			//user, err := uuid.Parse(value)
+			//if err != nil {
+			//	logger.Errorf("error parse user uuid is: %s", err)
+			//}
+			user := uuid.New()
 
 			short, err := a.Storage.Save(item.OriginalURL, item.CorrelationID, user)
 			if err != nil {

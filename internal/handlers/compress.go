@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"github.com/IKostarev/yandex-go-dev/internal/logger"
-	"github.com/IKostarev/yandex-go-dev/internal/middleware/authorization"
 	"github.com/google/uuid"
 	"io"
 	"net/http"
@@ -43,12 +42,12 @@ func (a *App) CompressHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	value := r.Context().Value(authorization.ContextKey("userID")).(string)
-
-	user, err := uuid.Parse(value)
-	if err != nil {
-		logger.Errorf("error parse user uuid is: %s", err)
-	}
+	//value := r.Context().Value(authorization.ContextKey("userID")).(string)
+	//
+	//user, err := uuid.Parse(value)
+	//if err != nil {
+	//	logger.Errorf("error parse user uuid is: %s", err)
+	//}
 
 	ch, _ := a.Storage.CheckIsURLExists(string(body)) //TODO handle error
 	if ch != "" {
@@ -69,6 +68,8 @@ func (a *App) CompressHandler(w http.ResponseWriter, r *http.Request) {
 
 		return
 	}
+
+	user := uuid.New()
 
 	short, err := a.Storage.Save(string(body), "", user)
 	if err != nil {
