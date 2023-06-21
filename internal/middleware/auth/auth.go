@@ -16,7 +16,7 @@ func Cookie(next http.Handler) http.Handler {
 			fmt.Println("createNewUser(w) = ", createNewUser(w))
 
 			//w.WriteHeader(http.StatusUnauthorized)
-			return
+			//return
 		}
 
 		fmt.Println("Cookie NOT NIL = ", cookie)
