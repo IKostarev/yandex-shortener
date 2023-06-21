@@ -50,7 +50,7 @@ func NewPostgresDB(addrConn string) (*DB, error) {
 	return psql, nil
 }
 
-func (psql *DB) Save(longURL, corrID string, user uuID.UUID) (string, error) {
+func (psql *DB) Save(longURL, corrID string) (string, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 	defer cancel()
 
@@ -69,7 +69,7 @@ func (psql *DB) Save(longURL, corrID string, user uuID.UUID) (string, error) {
 		corrID = shortURL
 	}
 
-	_, err = psql.db.Exec(ctx, `INSERT INTO yandex (id, longurl, shorturl, correlation, user_id) VALUES ($1, $2, $3, $4, $5);`, count, longURL, shortURL, corrID, user)
+	_, err = psql.db.Exec(ctx, `INSERT INTO yandex (id, longurl, shorturl, correlation, user_id) VALUES ($1, $2, $3, $4);`, count, longURL, shortURL, corrID)
 	if err != nil {
 		return "", fmt.Errorf("error is INSERT data in database: %w", err)
 	}
@@ -77,15 +77,13 @@ func (psql *DB) Save(longURL, corrID string, user uuID.UUID) (string, error) {
 	return shortURL, nil
 }
 
-func (psql *DB) Get(shortURL, corrID string, user uuID.UUID) (string, string) {
-	fmt.Println("GET POSTGRE = ", shortURL)
-
+func (psql *DB) Get(shortURL, corrID string) (string, string) {
 	var longURL string
 
 	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 	defer cancel()
 
-	row := psql.db.QueryRow(ctx, `SELECT longurl FROM yandex WHERE shorturl = $1 AND user_id = $s`, shortURL, user)
+	row := psql.db.QueryRow(ctx, `SELECT longurl FROM yandex WHERE shorturl = $1`, shortURL)
 
 	err := row.Scan(&longURL)
 	if err != nil {

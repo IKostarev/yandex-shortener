@@ -11,8 +11,10 @@ import (
 )
 
 type Storage interface {
-	Save(string, string, uuid.UUID) (string, error)
-	Get(string, string, uuid.UUID) (string, string)
+	//Save(string, string, uuid.UUID) (string, error)
+	//Get(string, string, uuid.UUID) (string, string)
+	Save(string, string) (string, error)
+	Get(string, string) (string, string)
 	GetUserLinks(uuid.UUID) ([]model.UserLink, error)
 	CheckIsURLExists(string) (string, error)
 	Ping() bool

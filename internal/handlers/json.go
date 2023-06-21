@@ -3,7 +3,6 @@ package handlers
 import (
 	"encoding/json"
 	"github.com/IKostarev/yandex-go-dev/internal/logger"
-	"github.com/google/uuid"
 	"net/http"
 	"net/url"
 )
@@ -90,10 +89,10 @@ func (a *App) JSONHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
+	//
+	//user := uuid.New()
 
-	user := uuid.New()
-
-	short, err := a.Storage.Save(req.ServerURL, "", user)
+	short, err := a.Storage.Save(req.ServerURL, "")
 	if err != nil {
 		logger.Errorf("storage save is error: %s", err)
 		w.WriteHeader(http.StatusBadRequest)

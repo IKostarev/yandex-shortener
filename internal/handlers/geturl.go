@@ -4,7 +4,6 @@ import (
 	"errors"
 	"github.com/IKostarev/yandex-go-dev/internal/logger"
 	"github.com/go-chi/chi/v5"
-	"github.com/google/uuid"
 	"net/http"
 )
 
@@ -22,10 +21,10 @@ func (a *App) GetURLHandler(w http.ResponseWriter, r *http.Request) {
 	//if err != nil {
 	//	logger.Errorf("error parse user uuid is: %s", err)
 	//}
+	//
+	//user := uuid.New()
 
-	user := uuid.New()
-
-	m, _ := a.Storage.Get(url, "", user)
+	m, _ := a.Storage.Get(url, "")
 	if m == "" {
 		logger.Errorf("get url is bad: %s", url)
 		w.WriteHeader(http.StatusBadRequest) //TODO в будущем переделать на http.StatusNotFound

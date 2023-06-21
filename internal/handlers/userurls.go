@@ -15,7 +15,7 @@ func (a *App) GetUserURLs(w http.ResponseWriter, _ *http.Request) {
 	//if err != nil {
 	//	logger.Errorf("error parse user uuid is: %s", err)
 	//}
-
+	//
 	user := uuid.New()
 
 	links, _ := a.Storage.GetUserLinks(user) //TODO handle error

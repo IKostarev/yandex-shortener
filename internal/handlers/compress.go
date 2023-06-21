@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"github.com/IKostarev/yandex-go-dev/internal/logger"
-	"github.com/google/uuid"
 	"io"
 	"net/http"
 	"net/url"
@@ -68,10 +67,10 @@ func (a *App) CompressHandler(w http.ResponseWriter, r *http.Request) {
 
 		return
 	}
+	//
+	//user := uuid.New()
 
-	user := uuid.New()
-
-	short, err := a.Storage.Save(string(body), "", user)
+	short, err := a.Storage.Save(string(body), "")
 	if err != nil {
 		logger.Errorf("storage save is error: %s", err)
 		w.WriteHeader(http.StatusBadRequest) //TODO в будущем переделать на http.StatusInternalServerError

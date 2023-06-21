@@ -21,26 +21,20 @@ func NewMem() (*Mem, error) {
 	return m, nil
 }
 
-func (m *Mem) Save(long, corrID string, user uuID.UUID) (string, error) {
+func (m *Mem) Save(long, corrID string) (string, error) {
 	short := utils.RandomString()
 
 	fmt.Println("SAVE LONG = ", long)
 
 	m.cacheCorrelation[corrID] = long
-	m.cacheByID[user] = map[string]string{short: long}
+	//m.cacheByID[user] = map[string]string{short: long}
 
 	return short, nil
 }
 
-func (m *Mem) Get(short, corrID string, user uuID.UUID) (string, string) {
-	fmt.Println("GET MEM = ", short)
-	fmt.Println("GET CACHE = ", m.cacheByID)
-	fmt.Println("m.cacheByID[user][short] = ", m.cacheByID[user][short])
-	fmt.Println("len map = ", len(m.cacheByID))
+func (m *Mem) Get(short, corrID string) (string, string) {
 
-	for id, urls := range m.cacheByID {
-		fmt.Println("id = ", id)
-		fmt.Println("user = ", user)
+	for _, urls := range m.cacheByID {
 
 		return urls[short], corrID
 

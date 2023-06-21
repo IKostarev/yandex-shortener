@@ -71,7 +71,7 @@ func NewFs(file *os.File) (*Fs, error) {
 	return fs, nil
 }
 
-func (m *Fs) Save(long, corrID string, user uuID.UUID) (string, error) {
+func (m *Fs) Save(long, corrID string) (string, error) {
 	urlData := &URLData{
 		UUID:          fmt.Sprintf("%d", m.count),
 		ShortURL:      utils.RandomString(),
@@ -98,21 +98,20 @@ func (m *Fs) Save(long, corrID string, user uuID.UUID) (string, error) {
 
 	m.cacheURL[urlData.ShortURL] = urlData.OriginalURL
 	m.cacheCorrelation[urlData.CorrelationID] = urlData.OriginalURL
-	m.cacheByID[user] = map[string]string{urlData.ShortURL: urlData.OriginalURL}
+	//m.cacheByID[user] = map[string]string{urlData.ShortURL: urlData.OriginalURL}
 
 	return urlData.ShortURL, nil
 }
 
-func (m *Fs) Get(short, corrID string, user uuID.UUID) (string, string) {
-	fmt.Println("GET FILE  = ", short)
-	fmt.Println("GET CACHE = ", m.cacheByID)
-	for id, urls := range m.cacheByID {
-		if id == user {
-			return urls[short], corrID
-		}
-	}
-
-	return "", ""
+func (m *Fs) Get(short, corrID string) (string, string) {
+	//for id, urls := range m.cacheByID {
+	//	if id == user {
+	//		return urls[short], corrID
+	//	}
+	//}
+	//
+	//return "", ""
+	return m.cacheURL[short], corrID
 }
 
 func (m *Fs) GetUserLinks(user uuID.UUID) (data []model.UserLink, err error) {

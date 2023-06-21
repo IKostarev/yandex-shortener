@@ -3,7 +3,6 @@ package handlers
 import (
 	"encoding/json"
 	"github.com/IKostarev/yandex-go-dev/internal/logger"
-	"github.com/google/uuid"
 	"net/http"
 	"net/url"
 )
@@ -54,9 +53,8 @@ func (a *App) BatchHandler(w http.ResponseWriter, rq *http.Request) {
 			//if err != nil {
 			//	logger.Errorf("error parse user uuid is: %s", err)
 			//}
-			user := uuid.New()
 
-			short, err := a.Storage.Save(item.OriginalURL, item.CorrelationID, user)
+			short, err := a.Storage.Save(item.OriginalURL, item.CorrelationID)
 			if err != nil {
 				logger.Errorf("batch save is error: %s", err)
 				w.WriteHeader(http.StatusBadRequest) // TODO: в будущем переделать на http.StatusInternalServerError
