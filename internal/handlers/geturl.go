@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"errors"
-	"fmt"
 	"github.com/IKostarev/yandex-go-dev/internal/logger"
 	"github.com/IKostarev/yandex-go-dev/internal/middleware/authorization"
 	"github.com/go-chi/chi/v5"
@@ -19,9 +18,8 @@ func (a *App) GetURLHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	value := r.Context().Value(authorization.ContextKey("userID")).(string)
-	fmt.Println("GETURL value = ", value)
+
 	user, err := uuid.Parse(value)
-	fmt.Println("GETURL user = ", user)
 	if err != nil {
 		logger.Errorf("error parse user uuid is: %s", err)
 	}
