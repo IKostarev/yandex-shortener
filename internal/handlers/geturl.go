@@ -14,8 +14,8 @@ func (a *App) GetURLHandler(w http.ResponseWriter, r *http.Request) {
 	if *cookie == "" {
 		fmt.Println("cookie is empty")
 		auth.CreateNewUser(w)
-		w.WriteHeader(http.StatusUnauthorized)
-		return
+		//w.WriteHeader(http.StatusUnauthorized)
+		//return
 	}
 
 	fmt.Println("GetURLHandler COOKIE = ", cookie)
