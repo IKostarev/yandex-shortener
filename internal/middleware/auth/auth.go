@@ -32,7 +32,7 @@ func CreateNewUser(w http.ResponseWriter) *http.Cookie {
 	http.SetCookie(w, &newCookie)
 	cfg.CookieKey = user
 
-	fmt.Println("CREATE NEW USER COOKIE = ", cfg.CookieKey)
+	fmt.Println("CREATE NEW USER COOKIE = ", &cfg.CookieKey)
 
 	return &newCookie
 }

@@ -4,17 +4,19 @@ import (
 	"errors"
 	"fmt"
 	"github.com/IKostarev/yandex-go-dev/internal/logger"
+	"github.com/IKostarev/yandex-go-dev/internal/middleware/auth"
 	"github.com/go-chi/chi/v5"
 	"net/http"
 )
 
 func (a *App) GetURLHandler(w http.ResponseWriter, r *http.Request) {
-	//cookie, _ := r.Cookie("ID")
-	//if cookie == nil {
-	//	cookie = auth.CreateNewUser(w)
-	//	w.WriteHeader(http.StatusUnauthorized)
-	//}
-	cookie := a.Config.CookieKey
+	cookie := &a.Config.CookieKey
+	if *cookie == "" {
+		fmt.Println("cookie is empty")
+		auth.CreateNewUser(w)
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+	}
 
 	fmt.Println("GetURLHandler COOKIE = ", cookie)
 

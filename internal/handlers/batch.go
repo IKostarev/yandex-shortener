@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/IKostarev/yandex-go-dev/internal/logger"
+	"github.com/IKostarev/yandex-go-dev/internal/middleware/auth"
 	"net/http"
 	"net/url"
 )
@@ -22,12 +23,13 @@ func (a *App) BatchHandler(w http.ResponseWriter, r *http.Request) {
 	var req []URLsRequest
 	var resp []URLsResponse
 
-	//cookie, _ := r.Cookie("ID")
-	//if cookie == nil {
-	//	cookie = auth.CreateNewUser(w)
-	//	w.WriteHeader(http.StatusUnauthorized)
-	//}
-	cookie := a.Config.CookieKey
+	cookie := &a.Config.CookieKey
+	if *cookie == "" {
+		fmt.Println("cookie is empty")
+		auth.CreateNewUser(w)
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+	}
 
 	fmt.Println("BatchHandler COOKIE = ", cookie)
 

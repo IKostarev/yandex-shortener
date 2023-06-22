@@ -3,18 +3,20 @@ package handlers
 import (
 	"fmt"
 	"github.com/IKostarev/yandex-go-dev/internal/logger"
+	"github.com/IKostarev/yandex-go-dev/internal/middleware/auth"
 	"io"
 	"net/http"
 	"net/url"
 )
 
 func (a *App) CompressHandler(w http.ResponseWriter, r *http.Request) {
-	//cookie, _ := r.Cookie("ID")
-	//if cookie == nil {
-	//	cookie = auth.CreateNewUser(w)
-	//	w.WriteHeader(http.StatusUnauthorized)
-	//}
-	cookie := a.Config.CookieKey
+	cookie := &a.Config.CookieKey
+	if *cookie == "" {
+		fmt.Println("cookie is empty")
+		auth.CreateNewUser(w)
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+	}
 
 	fmt.Println("CompressHandler COOKIE = ", cookie)
 
