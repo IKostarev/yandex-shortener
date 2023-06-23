@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/IKostarev/yandex-go-dev/internal/middleware/auth"
-	"log"
 	"net/http"
 	"strconv"
 )
@@ -27,14 +26,14 @@ func (a *App) UserURLsHandler(w http.ResponseWriter, r *http.Request) {
 	response := make([]UserLink, 0)
 	for _, link := range links {
 		response = append(response, UserLink{
-			ShortURL:    fmt.Sprintf("%s/%s", a.Config.BaseShortURL, link[0]),
+			ShortURL:    fmt.Sprintf("%s/%d", a.Config.BaseShortURL, link[0]),
 			OriginalURL: strconv.Itoa(int(link[1])),
 		})
 	}
 
 	responseJSON, err := json.Marshal(response)
 	if err != nil {
-		log.Printf("unable to marshal response: %v", err)
+		//log.Printf("unable to marshal response: %v", err)
 		return
 	}
 
@@ -45,7 +44,7 @@ func (a *App) UserURLsHandler(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("X-Content-Type-Options", "nosniff")
 		_, err = w.Write(responseJSON)
 		if err != nil {
-			log.Printf("write failed: %v", err)
+			//log.Printf("write failed: %v", err)
 		}
 	}
 }
