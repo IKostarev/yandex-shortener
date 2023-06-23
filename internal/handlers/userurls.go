@@ -3,8 +3,6 @@ package handlers
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/IKostarev/yandex-go-dev/internal/middleware/auth"
-	"log"
 	"net/http"
 	"strconv"
 )
@@ -15,12 +13,7 @@ type UserLink struct {
 }
 
 func (a *App) UserURLsHandler(w http.ResponseWriter, r *http.Request) {
-	cookie := a.Config.CookieKey
-	if cookie == "" {
-		auth.CreateNewUser(w)
-		//w.WriteHeader(http.StatusNoContent)
-		return
-	}
+	cookie := &a.Config.CookieKey
 
 	fmt.Println("UserURLsHandler = ", cookie)
 
@@ -46,8 +39,8 @@ func (a *App) UserURLsHandler(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("content-type", "application/json")
 		//w.Header().Set("X-Content-Type-Options", "nosniff")
 		//_, err = w.Write(responseJSON)
-		if err != nil {
-			log.Printf("write failed: %v", err)
-		}
+		//if err != nil {
+		//	log.Printf("write failed: %v", err)
+		//}
 	}
 }

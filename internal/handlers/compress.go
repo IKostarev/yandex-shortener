@@ -3,22 +3,15 @@ package handlers
 import (
 	"fmt"
 	"github.com/IKostarev/yandex-go-dev/internal/logger"
-	"github.com/IKostarev/yandex-go-dev/internal/middleware/auth"
 	"io"
 	"net/http"
 	"net/url"
 )
 
 func (a *App) CompressHandler(w http.ResponseWriter, r *http.Request) {
-	cookie := a.Config.CookieKey
-	if cookie == "" {
-		fmt.Println("cookie is empty")
-		auth.CreateNewUser(w)
-		//w.WriteHeader(http.StatusUnauthorized)
-		//return
-	}
+	cookie := &a.Config.CookieKey
 
-	fmt.Println("CompressHandler COOKIE = ", cookie)
+	fmt.Println("CompressHandler COOKIE &cookie = ", cookie)
 
 	body, err := io.ReadAll(r.Body)
 	if err != nil || len(body) == 0 {
@@ -53,18 +46,12 @@ func (a *App) CompressHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	short, err := a.Storage.Save(string(body), "", a.Config.CookieKey)
+	short, err := a.Storage.Save(string(body), "", cookie)
 	if err != nil {
 		logger.Errorf("storage save is error: %s", err)
 		w.WriteHeader(http.StatusBadRequest) //TODO в будущем переделать на http.StatusInternalServerError
 		return
 	}
-
-	//fmt.Println("UserURLsHandler COOKIE = ", *cookie)
-	//l, s := a.Storage.GetAllURLs(*cookie)
-
-	//fmt.Println("UserURLsHandler long = ", l)
-	//fmt.Println("UserURLsHandler short = ", s)
 
 	long, err := url.JoinPath(a.Config.BaseShortURL, short)
 	if err != nil {

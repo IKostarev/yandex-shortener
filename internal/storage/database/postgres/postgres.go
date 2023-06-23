@@ -48,7 +48,7 @@ func NewPostgresDB(addrConn string) (*DB, error) {
 	return psql, nil
 }
 
-func (psql *DB) Save(longURL, corrID string, cookie string) (string, error) {
+func (psql *DB) Save(longURL, corrID string, cookie *string) (string, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 	defer cancel()
 
@@ -75,7 +75,7 @@ func (psql *DB) Save(longURL, corrID string, cookie string) (string, error) {
 	return shortURL, nil
 }
 
-func (psql *DB) Get(shortURL, corrID string, cookie string) (string, string) {
+func (psql *DB) Get(shortURL, corrID string, cookie *string) (string, string) {
 	var longURL string
 
 	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
@@ -143,7 +143,7 @@ func (psql *DB) CheckIsURLExists(longURL string) (string, error) {
 	return res, nil
 }
 
-func (psql *DB) GetAllURLs(cookie string) ([]string, string) {
+func (psql *DB) GetAllURLs(cookie *string) ([]string, string) {
 	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 	defer cancel()
 

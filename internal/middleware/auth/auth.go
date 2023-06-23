@@ -11,8 +11,8 @@ import (
 func Cookie(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		cookie, _ := r.Cookie("ID")
-		fmt.Println("IT'S COOKIE = ", cookie)
-		if cookie == nil {
+		fmt.Println("IT'S COOKIE = ", cookie.Value)
+		if cookie.Value == "" {
 			CreateNewUser(w)
 		}
 

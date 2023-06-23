@@ -4,19 +4,12 @@ import (
 	"errors"
 	"fmt"
 	"github.com/IKostarev/yandex-go-dev/internal/logger"
-	"github.com/IKostarev/yandex-go-dev/internal/middleware/auth"
 	"github.com/go-chi/chi/v5"
 	"net/http"
 )
 
 func (a *App) GetURLHandler(w http.ResponseWriter, r *http.Request) {
-	cookie := a.Config.CookieKey
-	if cookie == "" {
-		//fmt.Println("cookie is empty")
-		auth.CreateNewUser(w)
-		//w.WriteHeader(http.StatusUnauthorized)
-		//return
-	}
+	cookie := &a.Config.CookieKey
 
 	fmt.Println("GetURLHandler COOKIE = ", cookie)
 
@@ -27,7 +20,7 @@ func (a *App) GetURLHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	m, _ := a.Storage.Get(url, "", a.Config.CookieKey)
+	m, _ := a.Storage.Get(url, "", cookie)
 	if m == "" {
 		logger.Errorf("get url is bad: %s", url)
 		w.WriteHeader(http.StatusBadRequest) //TODO в будущем переделать на http.StatusNotFound

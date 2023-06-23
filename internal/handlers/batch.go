@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/IKostarev/yandex-go-dev/internal/logger"
-	"github.com/IKostarev/yandex-go-dev/internal/middleware/auth"
 	"net/http"
 	"net/url"
 )
@@ -23,13 +22,7 @@ func (a *App) BatchHandler(w http.ResponseWriter, r *http.Request) {
 	var req []URLsRequest
 	var resp []URLsResponse
 
-	cookie := a.Config.CookieKey
-	if cookie == "" {
-		//fmt.Println("cookie is empty")
-		auth.CreateNewUser(w)
-		//w.WriteHeader(http.StatusUnauthorized)
-		//return
-	}
+	cookie := &a.Config.CookieKey
 
 	fmt.Println("BatchHandler COOKIE = ", cookie)
 
@@ -59,7 +52,7 @@ func (a *App) BatchHandler(w http.ResponseWriter, r *http.Request) {
 			resp = append(resp, r)
 			w.WriteHeader(http.StatusConflict)
 		} else {
-			short, err := a.Storage.Save(item.OriginalURL, item.CorrelationID, a.Config.CookieKey)
+			short, err := a.Storage.Save(item.OriginalURL, item.CorrelationID, cookie)
 			if err != nil {
 				logger.Errorf("batch save is error: %s", err)
 				w.WriteHeader(http.StatusBadRequest) // TODO: в будущем переделать на http.StatusInternalServerError

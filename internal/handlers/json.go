@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/IKostarev/yandex-go-dev/internal/logger"
-	"github.com/IKostarev/yandex-go-dev/internal/middleware/auth"
 	"net/http"
 	"net/url"
 )
@@ -18,13 +17,7 @@ type ResultResponse struct {
 }
 
 func (a *App) JSONHandler(w http.ResponseWriter, r *http.Request) {
-	cookie := a.Config.CookieKey
-	if cookie == "" {
-		//fmt.Println("cookie is empty")
-		auth.CreateNewUser(w)
-		//w.WriteHeader(http.StatusUnauthorized)
-		//return
-	}
+	cookie := &a.Config.CookieKey
 
 	fmt.Println("JSONHandler COOKIE = ", cookie)
 
@@ -67,7 +60,7 @@ func (a *App) JSONHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	short, err := a.Storage.Save(req.ServerURL, "", a.Config.CookieKey)
+	short, err := a.Storage.Save(req.ServerURL, "", cookie)
 	if err != nil {
 		logger.Errorf("storage save is error: %s", err)
 		w.WriteHeader(http.StatusBadRequest)
