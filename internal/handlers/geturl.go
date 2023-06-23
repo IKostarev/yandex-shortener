@@ -27,7 +27,7 @@ func (a *App) GetURLHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	m, _ := a.Storage.Get(url, "")
+	m, _ := a.Storage.Get(url, "", a.Config.CookieKey)
 	if m == "" {
 		logger.Errorf("get url is bad: %s", url)
 		w.WriteHeader(http.StatusBadRequest) //TODO в будущем переделать на http.StatusNotFound

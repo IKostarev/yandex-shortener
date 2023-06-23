@@ -48,7 +48,7 @@ func NewPostgresDB(addrConn string) (*DB, error) {
 	return psql, nil
 }
 
-func (psql *DB) Save(longURL, corrID string) (string, error) {
+func (psql *DB) Save(longURL, corrID string, cookie string) (string, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 	defer cancel()
 
@@ -67,7 +67,7 @@ func (psql *DB) Save(longURL, corrID string) (string, error) {
 		corrID = shortURL
 	}
 
-	_, err = psql.db.Exec(ctx, `INSERT INTO yandex (id, longurl, shorturl, correlation) VALUES ($1, $2, $3, $4);`, count, longURL, shortURL, corrID)
+	_, err = psql.db.Exec(ctx, `INSERT INTO yandex (id, longurl, shorturl, correlation, cookie) VALUES ($1, $2, $3, $4, $5);`, count, longURL, shortURL, corrID, cookie)
 	if err != nil {
 		return "", fmt.Errorf("error is INSERT data in database: %w", err)
 	}
@@ -75,13 +75,13 @@ func (psql *DB) Save(longURL, corrID string) (string, error) {
 	return shortURL, nil
 }
 
-func (psql *DB) Get(shortURL, corrID string) (string, string) {
+func (psql *DB) Get(shortURL, corrID string, cookie string) (string, string) {
 	var longURL string
 
 	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 	defer cancel()
 
-	row := psql.db.QueryRow(ctx, `SELECT longurl FROM yandex WHERE shorturl = $1`, shortURL)
+	row := psql.db.QueryRow(ctx, `SELECT longurl FROM yandex WHERE shorturl = $1 AND cookie = $2`, shortURL, cookie)
 
 	err := row.Scan(&longURL)
 	if err != nil {
@@ -105,6 +105,7 @@ func (psql *DB) createTable() error {
     		id SERIAL PRIMARY KEY,
    			longurl VARCHAR(255) NOT NULL,
     		shorturl VARCHAR(255) NOT NULL,
+    		cookie VARCHAR(255) NOT NULL,
    			correlation VARCHAR(255) NOT NULL);`)
 
 	return err

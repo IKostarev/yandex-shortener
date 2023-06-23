@@ -67,7 +67,7 @@ func (a *App) JSONHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	short, err := a.Storage.Save(req.ServerURL, "")
+	short, err := a.Storage.Save(req.ServerURL, "", a.Config.CookieKey)
 	if err != nil {
 		logger.Errorf("storage save is error: %s", err)
 		w.WriteHeader(http.StatusBadRequest)

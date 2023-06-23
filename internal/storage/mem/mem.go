@@ -18,7 +18,7 @@ func NewMem() (*Mem, error) {
 	return m, nil
 }
 
-func (m *Mem) Save(long, corrID string) (string, error) {
+func (m *Mem) Save(long, corrID string, _ string) (string, error) {
 	short := utils.RandomString()
 
 	m.cacheMemory[short] = long
@@ -27,7 +27,7 @@ func (m *Mem) Save(long, corrID string) (string, error) {
 	return short, nil
 }
 
-func (m *Mem) Get(short, corrID string) (string, string) {
+func (m *Mem) Get(short, corrID string, _ string) (string, string) {
 	return m.cacheMemory[short], corrID
 }
 

@@ -59,7 +59,7 @@ func (a *App) BatchHandler(w http.ResponseWriter, r *http.Request) {
 			resp = append(resp, r)
 			w.WriteHeader(http.StatusConflict)
 		} else {
-			short, err := a.Storage.Save(item.OriginalURL, item.CorrelationID)
+			short, err := a.Storage.Save(item.OriginalURL, item.CorrelationID, a.Config.CookieKey)
 			if err != nil {
 				logger.Errorf("batch save is error: %s", err)
 				w.WriteHeader(http.StatusBadRequest) // TODO: в будущем переделать на http.StatusInternalServerError

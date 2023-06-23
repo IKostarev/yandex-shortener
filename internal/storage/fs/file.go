@@ -14,6 +14,7 @@ type Fs struct {
 	fh               *os.File
 	cacheURL         map[string]string
 	cacheCorrelation map[string]string
+	cacheCookie      map[string]map[string]string
 	count            int64
 }
 
@@ -67,7 +68,7 @@ func NewFs(file *os.File) (*Fs, error) {
 	return fs, nil
 }
 
-func (m *Fs) Save(long, corrID string) (string, error) {
+func (m *Fs) Save(long, corrID string, _ string) (string, error) {
 	urlData := &URLData{
 		UUID:          fmt.Sprintf("%d", m.count),
 		ShortURL:      utils.RandomString(),
@@ -94,10 +95,11 @@ func (m *Fs) Save(long, corrID string) (string, error) {
 
 	m.cacheURL[urlData.ShortURL] = urlData.OriginalURL
 	m.cacheCorrelation[urlData.CorrelationID] = urlData.OriginalURL
+	//m.cacheCookie[]
 	return urlData.ShortURL, nil
 }
 
-func (m *Fs) Get(short, corrID string) (string, string) {
+func (m *Fs) Get(short, corrID string, _ string) (string, string) {
 	return m.cacheURL[short], corrID
 }
 

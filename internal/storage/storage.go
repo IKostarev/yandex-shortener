@@ -9,8 +9,8 @@ import (
 )
 
 type Storage interface {
-	Save(string, string) (string, error)
-	Get(string, string) (string, string)
+	Save(string, string, string) (string, error)
+	Get(string, string, string) (string, string)
 	CheckIsURLExists(string) (string, error)
 	Ping() bool
 	Close() error
