@@ -10,8 +10,8 @@ import (
 )
 
 func (a *App) CompressHandler(w http.ResponseWriter, r *http.Request) {
-	cookie := &a.Config.CookieKey
-	if *cookie == "" {
+	cookie := a.Config.CookieKey
+	if cookie == "" {
 		fmt.Println("cookie is empty")
 		auth.CreateNewUser(w)
 		//w.WriteHeader(http.StatusUnauthorized)

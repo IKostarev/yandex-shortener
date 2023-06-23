@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/IKostarev/yandex-go-dev/internal/middleware/auth"
+	"log"
 	"net/http"
 	"strconv"
 )
@@ -43,10 +44,10 @@ func (a *App) UserURLsHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusNoContent)
 	} else {
 		w.Header().Set("content-type", "application/json")
-		w.Header().Set("X-Content-Type-Options", "nosniff")
+		//w.Header().Set("X-Content-Type-Options", "nosniff")
 		//_, err = w.Write(responseJSON)
 		if err != nil {
-			//log.Printf("write failed: %v", err)
+			log.Printf("write failed: %v", err)
 		}
 	}
 }

@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/IKostarev/yandex-go-dev/internal/logger"
 	"github.com/IKostarev/yandex-go-dev/internal/middleware/auth"
 	"net/http"
@@ -22,15 +23,15 @@ func (a *App) BatchHandler(w http.ResponseWriter, r *http.Request) {
 	var req []URLsRequest
 	var resp []URLsResponse
 
-	cookie := &a.Config.CookieKey
-	if *cookie == "" {
+	cookie := a.Config.CookieKey
+	if cookie == "" {
 		//fmt.Println("cookie is empty")
 		auth.CreateNewUser(w)
 		//w.WriteHeader(http.StatusUnauthorized)
 		//return
 	}
 
-	//	fmt.Println("BatchHandler COOKIE = ", cookie)
+	fmt.Println("BatchHandler COOKIE = ", cookie)
 
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		logger.Errorf("json decode is error: %s", err)
