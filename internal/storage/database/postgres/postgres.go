@@ -147,6 +147,8 @@ func (psql *DB) GetAllURLs(cookie string) (string, string) {
 	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 	defer cancel()
 
+	fmt.Println("POSTGRES COOKIE = ", cookie)
+
 	row := psql.db.QueryRow(ctx, `SELECT longurl, shorturl FROM yandex WHERE cookie = $1`, cookie)
 
 	var res string
