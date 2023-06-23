@@ -10,6 +10,8 @@ func (a *App) UserURLsHandler(w http.ResponseWriter, r *http.Request) {
 	cookie := &a.Config.CookieKey
 	if *cookie == "" {
 		auth.CreateNewUser(w)
+		w.WriteHeader(http.StatusNoContent)
+		return
 	}
 
 	fmt.Println("UserURLsHandler COOKIE = ", *cookie)
