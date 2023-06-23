@@ -9,9 +9,14 @@ import (
 )
 
 func (a *App) CompressHandler(w http.ResponseWriter, r *http.Request) {
-	cookie := &a.Config.CookieKey
+	cookie := a.Config.CookieKey
 
-	fmt.Println("CompressHandler COOKIE &cookie = ", cookie)
+	fmt.Println("CompressHandler COOKIE cookie = ", cookie)
+
+	fmt.Println("CompressHandler COOKIE cookie = ", *cookie)
+
+	fmt.Println("CompressHandler COOKIE cookie = ", &cookie)
+	//fmt.Println("CompressHandler COOKIE *cookie = ", *cookie)
 
 	body, err := io.ReadAll(r.Body)
 	if err != nil || len(body) == 0 {
@@ -46,7 +51,7 @@ func (a *App) CompressHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	short, err := a.Storage.Save(string(body), "", cookie)
+	short, err := a.Storage.Save(string(body), "", *cookie)
 	if err != nil {
 		logger.Errorf("storage save is error: %s", err)
 		w.WriteHeader(http.StatusBadRequest) //TODO в будущем переделать на http.StatusInternalServerError

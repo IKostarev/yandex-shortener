@@ -5,9 +5,10 @@ import (
 	"fmt"
 	"github.com/IKostarev/yandex-go-dev/internal/logger"
 	"github.com/IKostarev/yandex-go-dev/internal/utils"
+	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
-	uuid "github.com/vgarvardt/pgx-google-uuid/v5"
+	id "github.com/vgarvardt/pgx-google-uuid/v5"
 	"time"
 )
 
@@ -22,7 +23,7 @@ func NewPostgresDB(addrConn string) (*DB, error) {
 	}
 
 	cfg.AfterConnect = func(ctx context.Context, conn *pgx.Conn) error {
-		uuid.Register(conn.TypeMap())
+		id.Register(conn.TypeMap())
 		return nil
 	}
 
@@ -48,7 +49,7 @@ func NewPostgresDB(addrConn string) (*DB, error) {
 	return psql, nil
 }
 
-func (psql *DB) Save(longURL, corrID string, cookie *string) (string, error) {
+func (psql *DB) Save(longURL, corrID string, cookie uuid.UUID) (string, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 	defer cancel()
 
@@ -67,6 +68,8 @@ func (psql *DB) Save(longURL, corrID string, cookie *string) (string, error) {
 		corrID = shortURL
 	}
 
+	fmt.Println("SAVE POSTGRE COOKIE = ", &cookie)
+
 	_, err = psql.db.Exec(ctx, `INSERT INTO yandex (id, longurl, shorturl, correlation, cookie) VALUES ($1, $2, $3, $4, $5);`, count, longURL, shortURL, corrID, cookie)
 	if err != nil {
 		return "", fmt.Errorf("error is INSERT data in database: %w", err)
@@ -75,11 +78,13 @@ func (psql *DB) Save(longURL, corrID string, cookie *string) (string, error) {
 	return shortURL, nil
 }
 
-func (psql *DB) Get(shortURL, corrID string, cookie *string) (string, string) {
+func (psql *DB) Get(shortURL, corrID string, cookie uuid.UUID) (string, string) {
 	var longURL string
 
 	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 	defer cancel()
+
+	fmt.Println("GET POSTGRE COOKIE = ", cookie)
 
 	row := psql.db.QueryRow(ctx, `SELECT longurl FROM yandex WHERE shorturl = $1 AND cookie = $2`, shortURL, cookie)
 
@@ -105,7 +110,7 @@ func (psql *DB) createTable() error {
     		id SERIAL PRIMARY KEY,
    			longurl VARCHAR(255) NOT NULL,
     		shorturl VARCHAR(255) NOT NULL,
-    		cookie VARCHAR(255) NOT NULL,
+    		cookie uuid NOT NULL,
    			correlation VARCHAR(255) NOT NULL);`)
 
 	return err
@@ -143,7 +148,7 @@ func (psql *DB) CheckIsURLExists(longURL string) (string, error) {
 	return res, nil
 }
 
-func (psql *DB) GetAllURLs(cookie *string) ([]string, string) {
+func (psql *DB) GetAllURLs(cookie uuid.UUID) ([]string, string) {
 	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 	defer cancel()
 

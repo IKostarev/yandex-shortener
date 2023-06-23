@@ -13,7 +13,7 @@ func Cookie(next http.Handler) http.Handler {
 		cookie, _ := r.Cookie("ID")
 		//fmt.Println("IT'S COOKIE = ", cookie.Value)
 		if cookie == nil {
-			CreateNewUser(w)
+			_ = CreateNewUser(w)
 		}
 
 		next.ServeHTTP(w, r)
@@ -21,14 +21,15 @@ func Cookie(next http.Handler) http.Handler {
 }
 
 func CreateNewUser(w http.ResponseWriter) *http.Cookie {
-	user := uuid.New().String()
+	user := uuid.New()
 	cfg := config.Config{}
 
 	newCookie := http.Cookie{
 		Name:    "ID",
-		Value:   user,
+		Value:   user.String(),
 		Expires: time.Now().Add(365 * 24 * time.Hour),
 	}
+
 	fmt.Println("CREATE NEW USER = ", user)
 
 	fmt.Println("&newCookie = ", &newCookie)

@@ -3,6 +3,7 @@ package config
 import (
 	"flag"
 	"fmt"
+	"github.com/google/uuid"
 	"net/url"
 	"os"
 )
@@ -12,7 +13,7 @@ const (
 	baseShortURLDefault = "http://localhost:8080"
 	fileStoragePath     = ""
 	databaseDSN         = ""
-	cookieKey           = ""
+	//cookieKey           = ""
 )
 
 type Config struct {
@@ -20,7 +21,7 @@ type Config struct {
 	BaseShortURL    string
 	FileStoragePath string
 	DatabaseDSN     string
-	CookieKey       string
+	CookieKey       uuid.UUID
 }
 
 func LoadConfig() (Config, error) {
@@ -29,7 +30,6 @@ func LoadConfig() (Config, error) {
 		BaseShortURL:    baseShortURLDefault,
 		FileStoragePath: fileStoragePath,
 		DatabaseDSN:     databaseDSN,
-		CookieKey:       cookieKey,
 	}
 
 	cfg.loadEnv()

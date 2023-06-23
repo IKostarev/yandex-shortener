@@ -13,11 +13,12 @@ type UserLink struct {
 }
 
 func (a *App) UserURLsHandler(w http.ResponseWriter, r *http.Request) {
-	cookie := &a.Config.CookieKey
+	cookie := a.Config.CookieKey
 
 	fmt.Println("UserURLsHandler = ", cookie)
+	fmt.Println("UserURLsHandler *cookie = ", *cookie)
 
-	links, _ := a.Storage.GetAllURLs(cookie)
+	links, _ := a.Storage.GetAllURLs(*cookie)
 
 	response := make([]UserLink, 0)
 	for _, link := range links {

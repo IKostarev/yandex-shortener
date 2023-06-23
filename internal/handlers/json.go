@@ -17,7 +17,7 @@ type ResultResponse struct {
 }
 
 func (a *App) JSONHandler(w http.ResponseWriter, r *http.Request) {
-	cookie := &a.Config.CookieKey
+	cookie := a.Config.CookieKey
 
 	fmt.Println("JSONHandler COOKIE = ", cookie)
 
@@ -60,7 +60,7 @@ func (a *App) JSONHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	short, err := a.Storage.Save(req.ServerURL, "", cookie)
+	short, err := a.Storage.Save(req.ServerURL, "", *cookie)
 	if err != nil {
 		logger.Errorf("storage save is error: %s", err)
 		w.WriteHeader(http.StatusBadRequest)

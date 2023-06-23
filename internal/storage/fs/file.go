@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"github.com/IKostarev/yandex-go-dev/internal/logger"
 	"github.com/IKostarev/yandex-go-dev/internal/utils"
+	"github.com/google/uuid"
 	"os"
 )
 
@@ -68,7 +69,7 @@ func NewFs(file *os.File) (*Fs, error) {
 	return fs, nil
 }
 
-func (m *Fs) Save(long, corrID string, _ *string) (string, error) {
+func (m *Fs) Save(long, corrID string, _ uuid.UUID) (string, error) {
 	urlData := &URLData{
 		UUID:          fmt.Sprintf("%d", m.count),
 		ShortURL:      utils.RandomString(),
@@ -99,7 +100,7 @@ func (m *Fs) Save(long, corrID string, _ *string) (string, error) {
 	return urlData.ShortURL, nil
 }
 
-func (m *Fs) Get(short, corrID string, _ *string) (string, string) {
+func (m *Fs) Get(short, corrID string, _ uuid.UUID) (string, string) {
 	return m.cacheURL[short], corrID
 }
 
@@ -113,7 +114,7 @@ func (m *Fs) CheckIsURLExists(longURL string) (string, error) {
 	return "", nil
 }
 
-func (m *Fs) GetAllURLs(_ *string) ([]string, string) {
+func (m *Fs) GetAllURLs(_ uuid.UUID) ([]string, string) {
 	return nil, ""
 }
 

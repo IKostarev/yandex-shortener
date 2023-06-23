@@ -9,7 +9,7 @@ import (
 )
 
 func (a *App) GetURLHandler(w http.ResponseWriter, r *http.Request) {
-	cookie := &a.Config.CookieKey
+	cookie := a.Config.CookieKey
 
 	fmt.Println("GetURLHandler COOKIE = ", cookie)
 
@@ -20,7 +20,7 @@ func (a *App) GetURLHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	m, _ := a.Storage.Get(url, "", cookie)
+	m, _ := a.Storage.Get(url, "", *cookie)
 	if m == "" {
 		logger.Errorf("get url is bad: %s", url)
 		w.WriteHeader(http.StatusBadRequest) //TODO в будущем переделать на http.StatusNotFound
