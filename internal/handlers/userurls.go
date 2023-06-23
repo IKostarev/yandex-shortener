@@ -17,7 +17,7 @@ func (a *App) UserURLsHandler(w http.ResponseWriter, r *http.Request) {
 	cookie := a.Config.CookieKey
 	if cookie == "" {
 		auth.CreateNewUser(w)
-		w.WriteHeader(http.StatusNoContent)
+		//w.WriteHeader(http.StatusNoContent)
 		return
 	}
 
@@ -33,7 +33,7 @@ func (a *App) UserURLsHandler(w http.ResponseWriter, r *http.Request) {
 		})
 	}
 
-	responseJSON, err := json.Marshal(response)
+	_, err := json.Marshal(response)
 	if err != nil {
 		//log.Printf("unable to marshal response: %v", err)
 		return
@@ -44,7 +44,7 @@ func (a *App) UserURLsHandler(w http.ResponseWriter, r *http.Request) {
 	} else {
 		w.Header().Set("content-type", "application/json")
 		w.Header().Set("X-Content-Type-Options", "nosniff")
-		_, err = w.Write(responseJSON)
+		//_, err = w.Write(responseJSON)
 		if err != nil {
 			//log.Printf("write failed: %v", err)
 		}
