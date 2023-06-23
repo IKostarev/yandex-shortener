@@ -34,7 +34,7 @@ func NewApp(cfg config.Config, store storage.Storage) *App {
 		r.Route("/api", func(r chi.Router) {
 			r.Post("/shorten", app.JSONHandler)
 			r.Post("/shorten/batch", app.BatchHandler)
-			r.Post("/user/urls", app.UserURLsHandler)
+			r.Get("/user/urls", app.UserURLsHandler)
 		})
 	})
 
