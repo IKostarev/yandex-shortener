@@ -143,6 +143,22 @@ func (psql *DB) CheckIsURLExists(longURL string) (string, error) {
 	return res, nil
 }
 
+func (psql *DB) GetAllURLs(cookie string) (string, string) {
+	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
+	defer cancel()
+
+	row := psql.db.QueryRow(ctx, `SELECT longurl, shorturl FROM yandex WHERE cookie = $1`, cookie)
+
+	var res string
+
+	err := row.Scan(&res)
+	if err != nil {
+		return "", ""
+	}
+
+	return res, ""
+}
+
 func (psql *DB) Ping() bool {
 	return psql.db.Ping(context.Background()) == nil
 }
