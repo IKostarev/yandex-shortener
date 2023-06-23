@@ -12,7 +12,7 @@ type Storage interface {
 	Save(string, string, string) (string, error)
 	Get(string, string, string) (string, string)
 	CheckIsURLExists(string) (string, error)
-	GetAllURLs(string) (string, string)
+	GetAllURLs(string) ([]string, string)
 	Ping() bool
 	Close() error
 }

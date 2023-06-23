@@ -113,8 +113,8 @@ func (m *Fs) CheckIsURLExists(longURL string) (string, error) {
 	return "", nil
 }
 
-func (m *Fs) GetAllURLs(_ string) (string, string) {
-	return "", ""
+func (m *Fs) GetAllURLs(_ string) ([]string, string) {
+	return nil, ""
 }
 
 func (m *Fs) Close() error {

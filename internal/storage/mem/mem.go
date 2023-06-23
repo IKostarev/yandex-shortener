@@ -41,8 +41,8 @@ func (m *Mem) CheckIsURLExists(longURL string) (string, error) {
 	return "", nil
 }
 
-func (m *Mem) GetAllURLs(_ string) (string, string) {
-	return "", ""
+func (m *Mem) GetAllURLs(_ string) ([]string, string) {
+	return nil, ""
 }
 
 func (m *Mem) Close() error {
