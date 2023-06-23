@@ -60,6 +60,12 @@ func (a *App) CompressHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	fmt.Println("UserURLsHandler COOKIE = ", *cookie)
+	l, s := a.Storage.GetAllURLs(*cookie)
+
+	fmt.Println("UserURLsHandler long = ", l)
+	fmt.Println("UserURLsHandler short = ", s)
+
 	long, err := url.JoinPath(a.Config.BaseShortURL, short)
 	if err != nil {
 		logger.Errorf("join path have err: %s", err)
