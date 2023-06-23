@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/IKostarev/yandex-go-dev/internal/logger"
 	"github.com/IKostarev/yandex-go-dev/internal/middleware/auth"
 	"net/http"
@@ -20,13 +19,13 @@ type ResultResponse struct {
 func (a *App) JSONHandler(w http.ResponseWriter, r *http.Request) {
 	cookie := &a.Config.CookieKey
 	if *cookie == "" {
-		fmt.Println("cookie is empty")
+		//fmt.Println("cookie is empty")
 		auth.CreateNewUser(w)
 		//w.WriteHeader(http.StatusUnauthorized)
 		//return
 	}
 
-	fmt.Println("JSONHandler COOKIE = ", cookie)
+	//fmt.Println("JSONHandler COOKIE = ", cookie)
 
 	var req URLRequest
 	var resp ResultResponse
