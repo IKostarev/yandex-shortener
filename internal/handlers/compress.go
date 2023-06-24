@@ -2,13 +2,14 @@ package handlers
 
 import (
 	"github.com/IKostarev/yandex-go-dev/internal/logger"
+	"github.com/IKostarev/yandex-go-dev/internal/middleware/auth"
 	"io"
 	"net/http"
 	"net/url"
 )
 
 func (a *App) CompressHandler(w http.ResponseWriter, r *http.Request) {
-	cookie := a.Config.CookieKey
+	cookie := auth.GlobalCookieKey
 
 	body, err := io.ReadAll(r.Body)
 	if err != nil || len(body) == 0 {
@@ -43,7 +44,7 @@ func (a *App) CompressHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	short, err := a.Storage.Save(string(body), "", cookie)
+	short, err := a.Storage.Save(string(body), "", string(cookie))
 	if err != nil {
 		logger.Errorf("storage save is error: %s", err)
 		w.WriteHeader(http.StatusBadRequest) //TODO в будущем переделать на http.StatusInternalServerError

@@ -45,6 +45,10 @@ func (m *Mem) GetAllURLs(_ string) ([]string, string) {
 	return nil, ""
 }
 
+func (m *Mem) GetAllShortURLs(_ string) ([]string, string) {
+	return nil, ""
+}
+
 func (m *Mem) Close() error {
 	return nil
 }

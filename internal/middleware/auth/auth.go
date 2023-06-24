@@ -1,11 +1,14 @@
 package auth
 
 import (
-	"github.com/IKostarev/yandex-go-dev/internal/config"
 	"github.com/google/uuid"
 	"net/http"
 	"time"
 )
+
+type CookieKey string
+
+var GlobalCookieKey CookieKey
 
 func Cookie(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -21,7 +24,6 @@ func Cookie(next http.Handler) http.Handler {
 
 func CreateNewUser(w http.ResponseWriter) *http.Cookie {
 	user := uuid.New()
-	cfg := &config.Config{}
 
 	newCookie := http.Cookie{
 		Name:    "ID",
@@ -29,7 +31,7 @@ func CreateNewUser(w http.ResponseWriter) *http.Cookie {
 		Expires: time.Now().Add(365 * 24 * time.Hour),
 	}
 
-	cfg.CookieKey = newCookie.Value
+	GlobalCookieKey = CookieKey(newCookie.Value)
 
 	return &newCookie
 }

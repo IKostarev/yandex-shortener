@@ -117,6 +117,10 @@ func (m *Fs) GetAllURLs(_ string) ([]string, string) {
 	return nil, ""
 }
 
+func (m *Fs) GetAllShortURLs(_ string) ([]string, string) {
+	return nil, ""
+}
+
 func (m *Fs) Close() error {
 	return m.fh.Close()
 }

@@ -20,7 +20,7 @@ type Config struct {
 	BaseShortURL    string
 	FileStoragePath string
 	DatabaseDSN     string
-	CookieKey       string
+	//CookieKey       string
 }
 
 func LoadConfig() (Config, error) {
@@ -29,6 +29,7 @@ func LoadConfig() (Config, error) {
 		BaseShortURL:    baseShortURLDefault,
 		FileStoragePath: fileStoragePath,
 		DatabaseDSN:     databaseDSN,
+		//CookieKey:       cookieKey,
 	}
 
 	cfg.loadEnv()

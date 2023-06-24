@@ -3,8 +3,8 @@ package handlers
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/IKostarev/yandex-go-dev/internal/middleware/auth"
 	"net/http"
-	"strconv"
 )
 
 type UserLink struct {
@@ -13,28 +13,36 @@ type UserLink struct {
 }
 
 func (a *App) UserURLsHandler(w http.ResponseWriter, r *http.Request) {
-	cookie := a.Config.CookieKey
+	cookie := auth.GlobalCookieKey
 
-	links, _ := a.Storage.GetAllURLs(cookie)
+	longURLs, _ := a.Storage.GetAllURLs(string(cookie))
+	shortURLs, _ := a.Storage.GetAllShortURLs(string(cookie))
+
+	fmt.Println("longURLs = ", longURLs)
 
 	response := make([]UserLink, 0)
-	for _, link := range links {
+	for i := 0; i < len(longURLs) && i < len(shortURLs); i++ {
+		shortURL := fmt.Sprintf("%s/%s", a.Config.BaseShortURL, shortURLs[i])
+		originalURL := longURLs[i]
+
 		response = append(response, UserLink{
-			ShortURL:    fmt.Sprintf("%s/%d", a.Config.BaseShortURL, link[0]),
-			OriginalURL: strconv.Itoa(int(link[1])),
+			ShortURL:    shortURL,
+			OriginalURL: originalURL,
 		})
 	}
 
 	responseJSON, err := json.Marshal(response)
 	if err != nil {
-		//log.Printf("unable to marshal response: %v", err)
+		// Обработка ошибки при маршалинге ответа
+		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
 	if len(response) == 0 {
 		w.WriteHeader(http.StatusNoContent)
 	} else {
-		w.Header().Set("content-type", "application/json")
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
 		_, _ = w.Write(responseJSON)
 	}
 }

@@ -13,6 +13,7 @@ type Storage interface {
 	Get(string, string, string) (string, string)
 	CheckIsURLExists(string) (string, error)
 	GetAllURLs(string) ([]string, string)
+	GetAllShortURLs(string) ([]string, string)
 	Ping() bool
 	Close() error
 }

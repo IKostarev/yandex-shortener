@@ -67,8 +67,6 @@ func (psql *DB) Save(longURL, corrID string, cookie string) (string, error) {
 		corrID = shortURL
 	}
 
-	fmt.Println("SAVE POSTGRE COOKIE = ", &cookie)
-
 	_, err = psql.db.Exec(ctx, `INSERT INTO yandex (id, longurl, shorturl, correlation, cookie) VALUES ($1, $2, $3, $4, $5);`, count, longURL, shortURL, corrID, cookie)
 	if err != nil {
 		return "", fmt.Errorf("error is INSERT data in database: %w", err)
@@ -151,14 +149,58 @@ func (psql *DB) GetAllURLs(cookie string) ([]string, string) {
 	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 	defer cancel()
 
-	fmt.Println("POSTGRES COOKIE = ", cookie)
-
-	row := psql.db.QueryRow(ctx, `SELECT longurl, shorturl FROM yandex WHERE cookie = $1`, cookie)
+	rows, err := psql.db.Query(ctx, `SELECT longurl, shorturl FROM yandex WHERE cookie = $1`, cookie)
+	if err != nil {
+		// Обработка ошибки запроса
+		return nil, ""
+	}
+	defer rows.Close()
 
 	var res []string
 
-	err := row.Scan(&res)
+	for rows.Next() {
+		var longURL, shortURL string
+		err := rows.Scan(&longURL, &shortURL)
+		if err != nil {
+			// Обработка ошибки сканирования результатов запроса
+			return nil, ""
+		}
+		res = append(res, longURL)
+	}
+
+	if err := rows.Err(); err != nil {
+		// Обработка ошибки после итерации по результатам запроса
+		return nil, ""
+	}
+
+	return res, ""
+}
+
+func (psql *DB) GetAllShortURLs(cookie string) ([]string, string) {
+	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
+	defer cancel()
+
+	rows, err := psql.db.Query(ctx, `SELECT shorturl, longurl FROM yandex WHERE cookie = $1`, cookie)
 	if err != nil {
+		// Обработка ошибки запроса
+		return nil, ""
+	}
+	defer rows.Close()
+
+	var res []string
+
+	for rows.Next() {
+		var longURL, shortURL string
+		err := rows.Scan(&longURL, &shortURL)
+		if err != nil {
+			// Обработка ошибки сканирования результатов запроса
+			return nil, ""
+		}
+		res = append(res, longURL)
+	}
+
+	if err := rows.Err(); err != nil {
+		// Обработка ошибки после итерации по результатам запроса
 		return nil, ""
 	}
 
