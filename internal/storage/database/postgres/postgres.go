@@ -75,20 +75,22 @@ func (psql *DB) Save(longURL, corrID string, cookie string) (string, error) {
 	return shortURL, nil
 }
 
-func (psql *DB) Get(shortURL, corrID string, cookie string) (string, string) {
+func (psql *DB) Get(shortURL, corrID string, _ string) (string, string) {
 	var longURL string
 
 	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 	defer cancel()
 
-	fmt.Println("GET POSTGRE COOKIE = ", cookie)
+	//fmt.Println("GET POSTGRE COOKIE = ", cookie)
 
-	row := psql.db.QueryRow(ctx, `SELECT longurl FROM yandex WHERE shorturl = $1 AND cookie = $2`, shortURL, cookie)
+	row := psql.db.QueryRow(ctx, `SELECT longurl FROM yandex WHERE shorturl = $1`, shortURL)
 
 	err := row.Scan(&longURL)
 	if err != nil {
 		logger.Errorf("error in Scan longURL in SELECT query: %s", err)
 	}
+
+	fmt.Println("longURL = ", &longURL)
 
 	return longURL, corrID
 }
