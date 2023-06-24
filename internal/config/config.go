@@ -3,7 +3,6 @@ package config
 import (
 	"flag"
 	"fmt"
-	"net/http"
 	"net/url"
 	"os"
 )
@@ -21,7 +20,7 @@ type Config struct {
 	BaseShortURL    string
 	FileStoragePath string
 	DatabaseDSN     string
-	CookieKey       *http.Cookie
+	CookieKey       string
 }
 
 func LoadConfig() (Config, error) {

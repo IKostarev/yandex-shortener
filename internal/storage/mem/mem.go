@@ -2,7 +2,6 @@ package mem
 
 import (
 	"github.com/IKostarev/yandex-go-dev/internal/utils"
-	"github.com/google/uuid"
 )
 
 type Mem struct {
@@ -19,7 +18,7 @@ func NewMem() (*Mem, error) {
 	return m, nil
 }
 
-func (m *Mem) Save(long, corrID string, _ uuid.UUID) (string, error) {
+func (m *Mem) Save(long, corrID string, _ string) (string, error) {
 	short := utils.RandomString()
 
 	m.cacheMemory[short] = long
@@ -28,7 +27,7 @@ func (m *Mem) Save(long, corrID string, _ uuid.UUID) (string, error) {
 	return short, nil
 }
 
-func (m *Mem) Get(short, corrID string, _ uuid.UUID) (string, string) {
+func (m *Mem) Get(short, corrID string, _ string) (string, string) {
 	return m.cacheMemory[short], corrID
 }
 
@@ -42,7 +41,7 @@ func (m *Mem) CheckIsURLExists(longURL string) (string, error) {
 	return "", nil
 }
 
-func (m *Mem) GetAllURLs(_ uuid.UUID) ([]string, string) {
+func (m *Mem) GetAllURLs(_ string) ([]string, string) {
 	return nil, ""
 }
 

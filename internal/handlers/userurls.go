@@ -15,10 +15,7 @@ type UserLink struct {
 func (a *App) UserURLsHandler(w http.ResponseWriter, r *http.Request) {
 	cookie := a.Config.CookieKey
 
-	fmt.Println("UserURLsHandler = ", cookie)
-	//fmt.Println("UserURLsHandler *cookie = ", *cookie)
-
-	links, _ := a.Storage.GetAllURLs(*cookie)
+	links, _ := a.Storage.GetAllURLs(cookie)
 
 	response := make([]UserLink, 0)
 	for _, link := range links {
@@ -28,7 +25,7 @@ func (a *App) UserURLsHandler(w http.ResponseWriter, r *http.Request) {
 		})
 	}
 
-	_, err := json.Marshal(response)
+	responseJSON, err := json.Marshal(response)
 	if err != nil {
 		//log.Printf("unable to marshal response: %v", err)
 		return
@@ -38,10 +35,6 @@ func (a *App) UserURLsHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusNoContent)
 	} else {
 		w.Header().Set("content-type", "application/json")
-		//w.Header().Set("X-Content-Type-Options", "nosniff")
-		//_, err = w.Write(responseJSON)
-		//if err != nil {
-		//	log.Printf("write failed: %v", err)
-		//}
+		_, _ = w.Write(responseJSON)
 	}
 }

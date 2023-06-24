@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/IKostarev/yandex-go-dev/internal/logger"
 	"net/http"
 	"net/url"
@@ -23,8 +22,6 @@ func (a *App) BatchHandler(w http.ResponseWriter, r *http.Request) {
 	var resp []URLsResponse
 
 	cookie := a.Config.CookieKey
-
-	fmt.Println("BatchHandler COOKIE = ", cookie)
 
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		logger.Errorf("json decode is error: %s", err)
@@ -52,7 +49,7 @@ func (a *App) BatchHandler(w http.ResponseWriter, r *http.Request) {
 			resp = append(resp, r)
 			w.WriteHeader(http.StatusConflict)
 		} else {
-			short, err := a.Storage.Save(item.OriginalURL, item.CorrelationID, *cookie)
+			short, err := a.Storage.Save(item.OriginalURL, item.CorrelationID, cookie)
 			if err != nil {
 				logger.Errorf("batch save is error: %s", err)
 				w.WriteHeader(http.StatusBadRequest) // TODO: в будущем переделать на http.StatusInternalServerError

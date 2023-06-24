@@ -6,14 +6,13 @@ import (
 	"github.com/IKostarev/yandex-go-dev/internal/storage/database/postgres"
 	"github.com/IKostarev/yandex-go-dev/internal/storage/fs"
 	"github.com/IKostarev/yandex-go-dev/internal/storage/mem"
-	"github.com/google/uuid"
 )
 
 type Storage interface {
-	Save(string, string, uuid.UUID) (string, error)
-	Get(string, string, uuid.UUID) (string, string)
+	Save(string, string, string) (string, error)
+	Get(string, string, string) (string, string)
 	CheckIsURLExists(string) (string, error)
-	GetAllURLs(uuid.UUID) ([]string, string)
+	GetAllURLs(string) ([]string, string)
 	Ping() bool
 	Close() error
 }

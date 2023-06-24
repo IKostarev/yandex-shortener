@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/IKostarev/yandex-go-dev/internal/logger"
 	"github.com/IKostarev/yandex-go-dev/internal/utils"
-	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	id "github.com/vgarvardt/pgx-google-uuid/v5"
@@ -49,7 +48,7 @@ func NewPostgresDB(addrConn string) (*DB, error) {
 	return psql, nil
 }
 
-func (psql *DB) Save(longURL, corrID string, cookie uuid.UUID) (string, error) {
+func (psql *DB) Save(longURL, corrID string, cookie string) (string, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 	defer cancel()
 
@@ -78,7 +77,7 @@ func (psql *DB) Save(longURL, corrID string, cookie uuid.UUID) (string, error) {
 	return shortURL, nil
 }
 
-func (psql *DB) Get(shortURL, corrID string, cookie uuid.UUID) (string, string) {
+func (psql *DB) Get(shortURL, corrID string, cookie string) (string, string) {
 	var longURL string
 
 	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
@@ -110,7 +109,7 @@ func (psql *DB) createTable() error {
     		id SERIAL PRIMARY KEY,
    			longurl VARCHAR(255) NOT NULL,
     		shorturl VARCHAR(255) NOT NULL,
-    		cookie uuid NOT NULL,
+    		cookie VARCHAR(255) NOT NULL,
    			correlation VARCHAR(255) NOT NULL);`)
 
 	return err
@@ -148,7 +147,7 @@ func (psql *DB) CheckIsURLExists(longURL string) (string, error) {
 	return res, nil
 }
 
-func (psql *DB) GetAllURLs(cookie uuid.UUID) ([]string, string) {
+func (psql *DB) GetAllURLs(cookie string) ([]string, string) {
 	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 	defer cancel()
 

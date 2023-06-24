@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"errors"
-	"fmt"
 	"github.com/IKostarev/yandex-go-dev/internal/logger"
 	"github.com/go-chi/chi/v5"
 	"net/http"
@@ -11,8 +10,6 @@ import (
 func (a *App) GetURLHandler(w http.ResponseWriter, r *http.Request) {
 	cookie := a.Config.CookieKey
 
-	fmt.Println("GetURLHandler COOKIE = ", cookie)
-
 	url := chi.URLParam(r, "id")
 	if url == "" {
 		_ = errors.New("url param bad with id")
@@ -20,7 +17,7 @@ func (a *App) GetURLHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	m, _ := a.Storage.Get(url, "", *cookie)
+	m, _ := a.Storage.Get(url, "", cookie)
 	if m == "" {
 		logger.Errorf("get url is bad: %s", url)
 		w.WriteHeader(http.StatusBadRequest) //TODO в будущем переделать на http.StatusNotFound
