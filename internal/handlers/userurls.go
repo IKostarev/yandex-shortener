@@ -16,7 +16,7 @@ func (a *App) UserURLsHandler(w http.ResponseWriter, r *http.Request) {
 	cookie := a.Config.CookieKey
 
 	fmt.Println("UserURLsHandler = ", cookie)
-	fmt.Println("UserURLsHandler *cookie = ", *cookie)
+	//fmt.Println("UserURLsHandler *cookie = ", *cookie)
 
 	links, _ := a.Storage.GetAllURLs(*cookie)
 

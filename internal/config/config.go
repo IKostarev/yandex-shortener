@@ -3,7 +3,7 @@ package config
 import (
 	"flag"
 	"fmt"
-	"github.com/google/uuid"
+	"net/http"
 	"net/url"
 	"os"
 )
@@ -21,7 +21,7 @@ type Config struct {
 	BaseShortURL    string
 	FileStoragePath string
 	DatabaseDSN     string
-	CookieKey       uuid.UUID
+	CookieKey       *http.Cookie
 }
 
 func LoadConfig() (Config, error) {

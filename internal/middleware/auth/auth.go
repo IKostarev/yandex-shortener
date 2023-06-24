@@ -1,7 +1,6 @@
 package auth
 
 import (
-	"fmt"
 	"github.com/IKostarev/yandex-go-dev/internal/config"
 	"github.com/google/uuid"
 	"net/http"
@@ -30,14 +29,17 @@ func CreateNewUser(w http.ResponseWriter) *http.Cookie {
 		Expires: time.Now().Add(365 * 24 * time.Hour),
 	}
 
-	fmt.Println("CREATE NEW USER = ", user)
-
-	fmt.Println("&newCookie = ", &newCookie)
+	//fmt.Println("CREATE NEW USER = ", user)
+	//
+	//fmt.Println("CREATE NEW &USER = ", &user)
+	//
+	//fmt.Println("&newCookie = ", &newCookie)
 
 	http.SetCookie(w, &newCookie)
-	cfg.CookieKey = user
 
-	fmt.Println("CREATE NEW USER COOKIE = ", cfg.CookieKey)
+	cfg.CookieKey = &newCookie
+
+	//fmt.Println("CREATE NEW USER COOKIE = ", cfg.CookieKey)
 
 	return &newCookie
 }

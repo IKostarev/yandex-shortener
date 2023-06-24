@@ -13,9 +13,11 @@ func (a *App) CompressHandler(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Println("CompressHandler COOKIE cookie = ", cookie)
 
-	fmt.Println("CompressHandler COOKIE cookie = ", *cookie)
+	fmt.Println("CompressHandler COOKIE &a.Config.CookieKey = ", &a.Config.CookieKey)
 
-	fmt.Println("CompressHandler COOKIE cookie = ", &cookie)
+	//fmt.Println("CompressHandler COOKIE cookie = ", *cookie)
+	//
+	//fmt.Println("CompressHandler COOKIE cookie = ", &cookie)
 	//fmt.Println("CompressHandler COOKIE *cookie = ", *cookie)
 
 	body, err := io.ReadAll(r.Body)
