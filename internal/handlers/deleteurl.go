@@ -40,7 +40,7 @@ func (a *App) DeleteURLsHandler(w http.ResponseWriter, r *http.Request) {
 	for _, shortURL := range urls {
 		err := a.Storage.DeleteURL([]byte(shortURL), string(cookie))
 		if !err {
-			logger.Errorf("failed to delete URL '%s': %s", shortURL, err)
+			//logger.Errorf("failed to delete URL '%s': %s", shortURL, err)
 			success = false
 		}
 	}

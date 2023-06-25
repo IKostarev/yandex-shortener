@@ -18,7 +18,7 @@ func (a *App) GetURLHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if a.Storage.IsDel(url) == true {
+	if a.Storage.IsDel(url) {
 		w.WriteHeader(http.StatusGone)
 		return
 	}
