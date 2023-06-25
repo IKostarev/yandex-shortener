@@ -35,6 +35,7 @@ func NewApp(cfg config.Config, store storage.Storage) *App {
 			r.Post("/shorten", app.JSONHandler)
 			r.Post("/shorten/batch", app.BatchHandler)
 			r.Get("/user/urls", app.UserURLsHandler)
+			r.Delete("/user/urls", app.DeleteURLsHandler)
 		})
 	})
 

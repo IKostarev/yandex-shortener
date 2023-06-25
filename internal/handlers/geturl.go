@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"errors"
-	"fmt"
 	"github.com/IKostarev/yandex-go-dev/internal/logger"
 	"github.com/IKostarev/yandex-go-dev/internal/middleware/auth"
 	"github.com/go-chi/chi/v5"
@@ -19,7 +18,10 @@ func (a *App) GetURLHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Println("url = ", url)
+	if a.Storage.IsDel(url) == true {
+		w.WriteHeader(http.StatusGone)
+		return
+	}
 
 	m, _ := a.Storage.Get(url, "", string(cookie))
 	if m == "" {

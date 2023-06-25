@@ -81,8 +81,6 @@ func (psql *DB) Get(shortURL, corrID string, _ string) (string, string) {
 	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 	defer cancel()
 
-	//fmt.Println("GET POSTGRE COOKIE = ", cookie)
-
 	row := psql.db.QueryRow(ctx, `SELECT longurl FROM yandex WHERE shorturl = $1`, shortURL)
 
 	err := row.Scan(&longURL)
@@ -93,6 +91,44 @@ func (psql *DB) Get(shortURL, corrID string, _ string) (string, string) {
 	fmt.Println("longURL = ", &longURL)
 
 	return longURL, corrID
+}
+
+func (psql *DB) IsDel(shortURL string) bool {
+	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
+	defer cancel()
+
+	var isDel bool
+
+	row := psql.db.QueryRow(ctx, `SELECT deleted FROM yandex WHERE shorturl = $1`, shortURL)
+	_ = row.Scan(&isDel)
+
+	if isDel == true {
+		return true
+	}
+
+	return false
+}
+
+func (psql *DB) DeleteURL(shortURLs []byte, cookie string) bool {
+	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
+	defer cancel()
+
+	var auth string
+	row := psql.db.QueryRow(ctx, `SELECT cookie FROM yandex WHERE shorturl = $1`, shortURLs[0])
+	_ = row.Scan(&auth)
+
+	if auth != cookie {
+		return false
+	}
+
+	for short := range shortURLs {
+		_, err := psql.db.Exec(ctx, `INSERT INTO yandex deleted VALUES $1;`, short)
+		if err != nil {
+			return false
+		}
+	}
+
+	return true
 }
 
 func (psql *DB) Close() error {
@@ -110,6 +146,7 @@ func (psql *DB) createTable() error {
    			longurl VARCHAR(255) NOT NULL,
     		shorturl VARCHAR(255) NOT NULL,
     		cookie VARCHAR(255) NOT NULL,
+    		deleted bool,
    			correlation VARCHAR(255) NOT NULL);`)
 
 	return err

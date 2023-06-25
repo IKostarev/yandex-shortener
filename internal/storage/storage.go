@@ -14,6 +14,8 @@ type Storage interface {
 	CheckIsURLExists(string) (string, error)
 	GetAllURLs(string) ([]string, string)
 	GetAllShortURLs(string) ([]string, string)
+	IsDel(string) bool
+	DeleteURL([]byte, string) bool
 	Ping() bool
 	Close() error
 }

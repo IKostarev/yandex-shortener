@@ -41,12 +41,20 @@ func (m *Mem) CheckIsURLExists(longURL string) (string, error) {
 	return "", nil
 }
 
+func (m *Mem) IsDel(_ string) bool {
+	return false
+}
+
 func (m *Mem) GetAllURLs(_ string) ([]string, string) {
 	return nil, ""
 }
 
 func (m *Mem) GetAllShortURLs(_ string) ([]string, string) {
 	return nil, ""
+}
+
+func (m *Mem) DeleteURL(_ []byte, _ string) bool {
+	return true
 }
 
 func (m *Mem) Close() error {
