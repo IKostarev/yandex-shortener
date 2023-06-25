@@ -102,25 +102,15 @@ func (psql *DB) IsDel(shortURL string) bool {
 	row := psql.db.QueryRow(ctx, `SELECT deleted FROM yandex WHERE shorturl = $1`, shortURL)
 	_ = row.Scan(&isDel)
 
-	return isDel == true
+	return isDel
 }
 
 func (psql *DB) DeleteURL(shortURLs []byte, cookie string) bool {
 	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 	defer cancel()
 
-	var auth string
-	row := psql.db.QueryRow(ctx, `SELECT cookie FROM yandex WHERE shorturl = $1`, shortURLs[0])
-	_ = row.Scan(&auth)
-
-	if auth != cookie {
-		fmt.Println("auth != cookie")
-		return false
-	}
-
-	for short := range shortURLs {
-		//fmt.Println("TRY DELETE URL IS = ", short)
-		_, _ = psql.db.Exec(ctx, `INSERT INTO yandex (deleted) VALUES ($1) WHERE shorturl = $2;`, true, short)
+	for _, short := range shortURLs {
+		_, _ = psql.db.Exec(ctx, `UPDATE yandex SET deleted = $1 WHERE shorturl = $2;`, true, short)
 	}
 
 	return true
