@@ -67,7 +67,7 @@ func (psql *DB) Save(longURL, corrID string, cookie string) (string, error) {
 		corrID = shortURL
 	}
 
-	_, err = psql.db.Exec(ctx, `INSERT INTO yandex (id, longurl, shorturl, correlation, cookie) VALUES ($1, $2, $3, $4, $5);`, count, longURL, shortURL, corrID, cookie)
+	_, err = psql.db.Exec(ctx, `INSERT INTO yandex (id, longurl, shorturl, correlation, cookie, deleted) VALUES ($1, $2, $3, $4, $5, $6);`, count, longURL, shortURL, corrID, cookie, false)
 	if err != nil {
 		return "", fmt.Errorf("error is INSERT data in database: %w", err)
 	}
@@ -102,11 +102,7 @@ func (psql *DB) IsDel(shortURL string) bool {
 	row := psql.db.QueryRow(ctx, `SELECT deleted FROM yandex WHERE shorturl = $1`, shortURL)
 	_ = row.Scan(&isDel)
 
-	if isDel == true {
-		return true
-	}
-
-	return false
+	return isDel == true
 }
 
 func (psql *DB) DeleteURL(shortURLs []byte, cookie string) bool {
@@ -118,14 +114,13 @@ func (psql *DB) DeleteURL(shortURLs []byte, cookie string) bool {
 	_ = row.Scan(&auth)
 
 	if auth != cookie {
+		fmt.Println("auth != cookie")
 		return false
 	}
 
 	for short := range shortURLs {
-		_, err := psql.db.Exec(ctx, `INSERT INTO yandex deleted VALUES $1;`, short)
-		if err != nil {
-			return false
-		}
+		//fmt.Println("TRY DELETE URL IS = ", short)
+		_, _ = psql.db.Exec(ctx, `INSERT INTO yandex (deleted) VALUES ($1) WHERE shorturl = $2;`, true, short)
 	}
 
 	return true

@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"encoding/json"
+	"fmt"
 	"github.com/IKostarev/yandex-go-dev/internal/logger"
 	"github.com/IKostarev/yandex-go-dev/internal/middleware/auth"
 	"io"
@@ -10,17 +12,42 @@ import (
 func (a *App) DeleteURLsHandler(w http.ResponseWriter, r *http.Request) {
 	cookie := auth.GlobalCookieKey
 
-	urls, err := io.ReadAll(r.Body)
-	if len(urls) == 0 || err != nil {
-		logger.Errorf("body is nil or empty: %s", err)
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		logger.Errorf("failed to read request body: %s", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	var urls []string
+	err = json.Unmarshal(body, &urls)
+	if err != nil {
+		logger.Errorf("failed to unmarshal request body: %s", err)
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
-	del := a.Storage.DeleteURL(urls, string(cookie))
-	if del == false {
+	fmt.Println("URLS = ", urls)
+
+	if len(urls) == 0 {
+		//logger.Error("empty list of URLs received")
 		w.WriteHeader(http.StatusBadRequest)
-	} else {
+		return
+	}
+
+	success := true
+	//ctx := r.Context()
+	for _, shortURL := range urls {
+		err := a.Storage.DeleteURL([]byte(shortURL), string(cookie))
+		if !err {
+			logger.Errorf("failed to delete URL '%s': %s", shortURL, err)
+			success = false
+		}
+	}
+
+	if success {
 		w.WriteHeader(http.StatusAccepted)
+	} else {
+		w.WriteHeader(http.StatusInternalServerError)
 	}
 }
