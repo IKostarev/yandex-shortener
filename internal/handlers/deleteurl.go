@@ -13,7 +13,7 @@ func (a *App) DeleteURLsHandler(w http.ResponseWriter, r *http.Request) {
 
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
-		logger.Errorf("failed to read request body: %s", err)
+		logger.Errorf("ошибка чтения тела запроса: %s", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -21,7 +21,7 @@ func (a *App) DeleteURLsHandler(w http.ResponseWriter, r *http.Request) {
 	var urls []string
 	err = json.Unmarshal(body, &urls)
 	if err != nil {
-		logger.Errorf("failed to unmarshal request body: %s", err)
+		logger.Errorf("ошибка разбора тела запроса: %s", err)
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
@@ -37,8 +37,8 @@ func (a *App) DeleteURLsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	deleteURL := func(shortURL string, results chan<- DeleteResult) {
-		err := a.Storage.DeleteURL([]byte(shortURL), string(cookie))
-		results <- DeleteResult{ShortURL: shortURL, Success: err}
+		success := a.Storage.DeleteURL([]string{shortURL}, string(cookie))
+		results <- DeleteResult{ShortURL: shortURL, Success: success}
 	}
 
 	results := make(chan DeleteResult)

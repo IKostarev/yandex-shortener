@@ -119,11 +119,8 @@ func (psql *DB) DeleteURL(shortURLs []string, _ string) bool {
 
 	query := `UPDATE yandex SET deleted = $1 WHERE shorturl IN (` + placeholders(len(shortURLs), 2) + `);`
 	_, err := psql.db.Exec(ctx, query, values...)
-	if err != nil {
-		return false
-	}
 
-	return true
+	return err == nil
 }
 
 func placeholders(count, offset int) string {
