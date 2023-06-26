@@ -51,7 +51,7 @@ func NewPostgresDB(addrConn string) (*DB, error) {
 }
 
 func (psql *DB) Save(longURL, corrID string, cookie string) (string, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 120*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
 
 	var count string
@@ -80,7 +80,7 @@ func (psql *DB) Save(longURL, corrID string, cookie string) (string, error) {
 func (psql *DB) Get(shortURL, corrID string, _ string) (string, string) {
 	var longURL string
 
-	ctx, cancel := context.WithTimeout(context.Background(), 120*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
 
 	row := psql.db.QueryRow(ctx, `SELECT longurl FROM yandex WHERE shorturl = $1`, shortURL)
@@ -96,7 +96,7 @@ func (psql *DB) Get(shortURL, corrID string, _ string) (string, string) {
 }
 
 func (psql *DB) IsDel(shortURL string) bool {
-	ctx, cancel := context.WithTimeout(context.Background(), 120*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
 
 	var isDel bool
@@ -108,7 +108,7 @@ func (psql *DB) IsDel(shortURL string) bool {
 }
 
 func (psql *DB) DeleteURL(shortURLs []string, _ string) bool {
-	ctx, cancel := context.WithTimeout(context.Background(), 120*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
 
 	values := make([]interface{}, len(shortURLs)*2)
@@ -137,7 +137,7 @@ func (psql *DB) Close() error {
 }
 
 func (psql *DB) createTable() error {
-	ctx, cancel := context.WithTimeout(context.Background(), 120*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
 
 	_, err := psql.db.Exec(ctx,
@@ -153,7 +153,7 @@ func (psql *DB) createTable() error {
 }
 
 func (psql *DB) checkIsTablesExists() (bool, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 120*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
 
 	row := psql.db.QueryRow(ctx, `SELECT EXISTS (SELECT FROM pg_tables WHERE schemaname = 'public' AND tablename = 'yandex')`)
@@ -169,7 +169,7 @@ func (psql *DB) checkIsTablesExists() (bool, error) {
 }
 
 func (psql *DB) CheckIsURLExists(longURL string) (string, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 120*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
 
 	row := psql.db.QueryRow(ctx, `SELECT shorturl FROM yandex WHERE longurl = $1`, longURL)
@@ -185,7 +185,7 @@ func (psql *DB) CheckIsURLExists(longURL string) (string, error) {
 }
 
 func (psql *DB) GetAllURLs(cookie string) ([]string, string) {
-	ctx, cancel := context.WithTimeout(context.Background(), 120*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
 
 	rows, err := psql.db.Query(ctx, `SELECT longurl, shorturl FROM yandex WHERE cookie = $1`, cookie)
@@ -216,7 +216,7 @@ func (psql *DB) GetAllURLs(cookie string) ([]string, string) {
 }
 
 func (psql *DB) GetAllShortURLs(cookie string) ([]string, string) {
-	ctx, cancel := context.WithTimeout(context.Background(), 120*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
 
 	rows, err := psql.db.Query(ctx, `SELECT shorturl, longurl FROM yandex WHERE cookie = $1`, cookie)
