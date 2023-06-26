@@ -38,7 +38,7 @@ func (a *App) DeleteURLsHandler(w http.ResponseWriter, r *http.Request) {
 
 	deleteURL := func(shortURL string, results chan<- DeleteResult) {
 		err := a.Storage.DeleteURL([]byte(shortURL), string(cookie))
-		results <- DeleteResult{ShortURL: shortURL, Success: err == true} //TODO maybe need err == false
+		results <- DeleteResult{ShortURL: shortURL, Success: err}
 	}
 
 	results := make(chan DeleteResult)

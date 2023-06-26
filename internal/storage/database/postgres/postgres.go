@@ -8,6 +8,8 @@ import (
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	id "github.com/vgarvardt/pgx-google-uuid/v5"
+	"strconv"
+	"strings"
 	"time"
 )
 
@@ -105,15 +107,31 @@ func (psql *DB) IsDel(shortURL string) bool {
 	return isDel
 }
 
-func (psql *DB) DeleteURL(shortURLs []byte, cookie string) bool {
+func (psql *DB) DeleteURL(shortURLs []string, _ string) bool {
 	ctx, cancel := context.WithTimeout(context.Background(), 120*time.Second)
 	defer cancel()
 
-	for _, short := range shortURLs {
-		_, _ = psql.db.Exec(ctx, `UPDATE yandex SET deleted = $1 WHERE shorturl = $2;`, true, short)
+	values := make([]interface{}, len(shortURLs)*2)
+	for i, shortURL := range shortURLs {
+		values[i*2] = true
+		values[i*2+1] = shortURL
+	}
+
+	query := `UPDATE yandex SET deleted = $1 WHERE shorturl IN (` + placeholders(len(shortURLs), 2) + `);`
+	_, err := psql.db.Exec(ctx, query, values...)
+	if err != nil {
+		return false
 	}
 
 	return true
+}
+
+func placeholders(count, offset int) string {
+	ph := make([]string, count)
+	for i := range ph {
+		ph[i] = "$" + strconv.Itoa(i+offset)
+	}
+	return strings.Join(ph, ", ")
 }
 
 func (psql *DB) Close() error {
