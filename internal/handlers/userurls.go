@@ -20,25 +20,36 @@ func (a *App) UserURLsHandler(w http.ResponseWriter, _ *http.Request) {
 
 	var longURLs []string
 	var shortURLs []string
-	var longURLsErr, shortURLsErr string
 
 	wg.Add(2)
 
+	longURLsChan := make(chan []string)
+	shortURLsChan := make(chan []string)
+
 	go func() {
 		defer wg.Done()
-		longURLs, longURLsErr = a.Storage.GetAllURLs(string(cookie))
+		longURLsStr, _ := a.Storage.GetAllURLs(string(cookie))
+		longURLsChan <- longURLsStr
 	}()
 
 	go func() {
 		defer wg.Done()
-		shortURLs, shortURLsErr = a.Storage.GetAllShortURLs(string(cookie))
+		shortURLsStr, _ := a.Storage.GetAllShortURLs(string(cookie))
+		shortURLsChan <- shortURLsStr
 	}()
 
-	wg.Wait()
+	go func() {
+		wg.Wait()
+		close(longURLsChan)
+		close(shortURLsChan)
+	}()
 
-	if longURLsErr != "" || shortURLsErr != "" {
-		w.WriteHeader(http.StatusInternalServerError)
-		return
+	for urls := range longURLsChan {
+		longURLs = append(longURLs, urls...)
+	}
+
+	for urls := range shortURLsChan {
+		shortURLs = append(shortURLs, urls...)
 	}
 
 	fmt.Println("longURLs = ", longURLs)
