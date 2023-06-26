@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/IKostarev/yandex-go-dev/internal/middleware/auth"
 	"net/http"
-	"sync"
 )
 
 type UserLink struct {
@@ -13,50 +12,16 @@ type UserLink struct {
 	OriginalURL string `json:"original_url"`
 }
 
-func (a *App) UserURLsHandler(w http.ResponseWriter, _ *http.Request) {
+func (a *App) UserURLsHandler(w http.ResponseWriter, r *http.Request) {
 	cookie := auth.GlobalCookieKey
 
-	var wg sync.WaitGroup
-
-	var longURLs []string
-	var shortURLs []string
-
-	wg.Add(2)
-
-	longURLsChan := make(chan []string)
-	shortURLsChan := make(chan []string)
-
-	go func() {
-		defer wg.Done()
-		longURLsStr, _ := a.Storage.GetAllURLs(string(cookie))
-		longURLsChan <- longURLsStr
-	}()
-
-	go func() {
-		defer wg.Done()
-		shortURLsStr, _ := a.Storage.GetAllShortURLs(string(cookie))
-		shortURLsChan <- shortURLsStr
-	}()
-
-	go func() {
-		wg.Wait()
-		close(longURLsChan)
-		close(shortURLsChan)
-	}()
-
-	for urls := range longURLsChan {
-		longURLs = append(longURLs, urls...)
-	}
-
-	for urls := range shortURLsChan {
-		shortURLs = append(shortURLs, urls...)
-	}
+	longURLs, _ := a.Storage.GetAllURLs(string(cookie))
+	shortURLs, _ := a.Storage.GetAllShortURLs(string(cookie))
 
 	fmt.Println("longURLs = ", longURLs)
-	fmt.Println("shortURLs = ", shortURLs)
 
 	response := make([]UserLink, 0)
-	for i := 0; i < len(shortURLs); i++ {
+	for i := 0; i < len(longURLs) && i < len(shortURLs); i++ {
 		shortURL := fmt.Sprintf("%s/%s", a.Config.BaseShortURL, shortURLs[i])
 		originalURL := longURLs[i]
 

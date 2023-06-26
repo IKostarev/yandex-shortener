@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/IKostarev/yandex-go-dev/internal/logger"
 	"github.com/IKostarev/yandex-go-dev/internal/middleware/auth"
 	"io"
@@ -27,20 +26,49 @@ func (a *App) DeleteURLsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Println("URLS = ", urls)
-
 	if len(urls) == 0 {
-		//logger.Error("empty list of URLs received")
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
-	success := true
-	//ctx := r.Context()
-	for _, shortURL := range urls {
+	type DeleteResult struct {
+		ShortURL string
+		Success  bool
+	}
+
+	deleteURL := func(shortURL string, results chan<- DeleteResult) {
 		err := a.Storage.DeleteURL([]byte(shortURL), string(cookie))
-		if !err {
-			//logger.Errorf("failed to delete URL '%s': %s", shortURL, err)
+		results <- DeleteResult{ShortURL: shortURL, Success: err == true} //TODO maybe need err == false
+	}
+
+	results := make(chan DeleteResult)
+	done := make(chan struct{})
+
+	for _, shortURL := range urls {
+		go deleteURL(shortURL, results)
+	}
+
+	fanIn := func(results <-chan DeleteResult, done chan<- struct{}) <-chan DeleteResult {
+		merged := make(chan DeleteResult)
+
+		go func() {
+			defer close(merged)
+			defer close(done)
+
+			for result := range results {
+				merged <- result
+			}
+		}()
+
+		return merged
+	}
+
+	mergedResults := fanIn(results, done)
+
+	success := true
+	for range urls {
+		result := <-mergedResults
+		if !result.Success {
 			success = false
 		}
 	}
