@@ -53,7 +53,7 @@ func (m *Mem) GetAllShortURLs(_ string) ([]string, string) {
 	return nil, ""
 }
 
-func (m *Mem) DeleteURL(_ []byte, _ string) bool {
+func (m *Mem) DeleteURL(_ []string, _ string) bool {
 	return true
 }
 

@@ -125,7 +125,7 @@ func (m *Fs) GetAllShortURLs(_ string) ([]string, string) {
 	return nil, ""
 }
 
-func (m *Fs) DeleteURL(_ []byte, _ string) bool {
+func (m *Fs) DeleteURL(_ []string, _ string) bool {
 	return true
 }
 

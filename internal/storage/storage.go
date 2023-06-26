@@ -15,7 +15,7 @@ type Storage interface {
 	GetAllURLs(string) ([]string, string)
 	GetAllShortURLs(string) ([]string, string)
 	IsDel(string) bool
-	DeleteURL([]byte, string) bool
+	DeleteURL([]string, string) bool
 	Ping() bool
 	Close() error
 }
