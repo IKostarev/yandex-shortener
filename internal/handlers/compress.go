@@ -14,8 +14,8 @@ func (a *App) CompressHandler(w http.ResponseWriter, r *http.Request) {
 	body, err := io.ReadAll(r.Body)
 	if err != nil || len(body) == 0 {
 		logger.Errorf("body is nil or empty: %s", err)
-		w.WriteHeader(http.StatusBadRequest)
-		return
+		//w.WriteHeader(http.StatusBadRequest)
+		//return
 	}
 
 	if a.Config.DatabaseDSN != "" {
@@ -28,16 +28,16 @@ func (a *App) CompressHandler(w http.ResponseWriter, r *http.Request) {
 			res, err := url.JoinPath(a.Config.BaseShortURL, short)
 			if err != nil {
 				logger.Errorf("error is JoinPath: %s", err)
-				w.WriteHeader(http.StatusBadRequest)
-				return
+				//w.WriteHeader(http.StatusBadRequest)
+				//return
 			}
 
 			w.WriteHeader(http.StatusConflict)
 			_, err = w.Write([]byte(res))
 			if err != nil {
 				logger.Errorf("Failed to send URL: %s", err)
-				w.WriteHeader(http.StatusBadRequest)
-				return
+				//w.WriteHeader(http.StatusBadRequest)
+				//return
 			}
 
 			return
@@ -47,15 +47,15 @@ func (a *App) CompressHandler(w http.ResponseWriter, r *http.Request) {
 	short, err := a.Storage.Save(string(body), "", string(cookie))
 	if err != nil {
 		logger.Errorf("storage save is error: %s", err)
-		w.WriteHeader(http.StatusBadRequest) //TODO в будущем переделать на http.StatusInternalServerError
-		return
+		//w.WriteHeader(http.StatusBadRequest) //TODO в будущем переделать на http.StatusInternalServerError
+		//return
 	}
 
 	long, err := url.JoinPath(a.Config.BaseShortURL, short)
 	if err != nil {
 		logger.Errorf("join path have err: %s", err)
-		w.WriteHeader(http.StatusBadRequest) //TODO в будущем переделать на http.StatusInternalServerError
-		return
+		//w.WriteHeader(http.StatusBadRequest) //TODO в будущем переделать на http.StatusInternalServerError
+		//return
 	}
 
 	w.WriteHeader(http.StatusCreated)
