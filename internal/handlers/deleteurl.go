@@ -2,10 +2,12 @@ package handlers
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/IKostarev/yandex-go-dev/internal/logger"
 	"github.com/IKostarev/yandex-go-dev/internal/middleware/auth"
 	"io"
 	"net/http"
+	"time"
 )
 
 func (a *App) DeleteURLsHandler(w http.ResponseWriter, r *http.Request) {
@@ -31,51 +33,17 @@ func (a *App) DeleteURLsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	type DeleteResult struct {
-		ShortURL string
-		Success  bool
-	}
+	w.WriteHeader(http.StatusAccepted)
 
-	deleteURL := func(shortURL string, results chan<- DeleteResult) {
-		success := a.Storage.DeleteURL([]string{shortURL}, string(cookie))
-		results <- DeleteResult{ShortURL: shortURL, Success: success}
-	}
+	go func() {
+		time.Sleep(3 * time.Minute)
 
-	results := make(chan DeleteResult)
-	done := make(chan struct{})
+		success := a.Storage.DeleteURL(urls, string(cookie))
 
-	for _, shortURL := range urls {
-		go deleteURL(shortURL, results)
-	}
-
-	fanIn := func(results <-chan DeleteResult, done chan<- struct{}) <-chan DeleteResult {
-		merged := make(chan DeleteResult)
-
-		go func() {
-			defer close(merged)
-			defer close(done)
-
-			for result := range results {
-				merged <- result
-			}
-		}()
-
-		return merged
-	}
-
-	mergedResults := fanIn(results, done)
-
-	success := true
-	for range urls {
-		result := <-mergedResults
-		if !result.Success {
-			success = false
+		if success {
+			fmt.Println("URL-ы успешно удалены")
+		} else {
+			logger.Errorf("ошибка при удалении URL-ов")
 		}
-	}
-
-	if success {
-		w.WriteHeader(http.StatusAccepted)
-	} else {
-		w.WriteHeader(http.StatusInternalServerError)
-	}
+	}()
 }

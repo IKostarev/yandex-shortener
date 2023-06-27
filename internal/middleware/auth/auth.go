@@ -22,7 +22,7 @@ func Cookie(next http.Handler) http.Handler {
 	})
 }
 
-func CreateNewUser(w http.ResponseWriter) *http.Cookie {
+func CreateNewUser(_ http.ResponseWriter) *http.Cookie {
 	user := uuid.New()
 
 	newCookie := http.Cookie{
