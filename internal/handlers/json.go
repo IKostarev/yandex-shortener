@@ -3,6 +3,7 @@ package handlers
 import (
 	"encoding/json"
 	"github.com/IKostarev/yandex-go-dev/internal/logger"
+	"github.com/IKostarev/yandex-go-dev/internal/middleware/auth"
 	"net/http"
 	"net/url"
 )
@@ -16,6 +17,8 @@ type ResultResponse struct {
 }
 
 func (a *App) JSONHandler(w http.ResponseWriter, r *http.Request) {
+	cookie := auth.GlobalCookieKey
+
 	var req URLRequest
 	var resp ResultResponse
 
@@ -55,7 +58,7 @@ func (a *App) JSONHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	short, err := a.Storage.Save(req.ServerURL, "")
+	short, err := a.Storage.Save(req.ServerURL, "", string(cookie))
 	if err != nil {
 		logger.Errorf("storage save is error: %s", err)
 		w.WriteHeader(http.StatusBadRequest)

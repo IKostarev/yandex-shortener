@@ -9,9 +9,13 @@ import (
 )
 
 type Storage interface {
-	Save(string, string) (string, error)
-	Get(string, string) (string, string)
+	Save(string, string, string) (string, error)
+	Get(string, string, string) (string, string)
 	CheckIsURLExists(string) (string, error)
+	GetAllURLs(string) ([]string, string)
+	GetAllShortURLs(string) ([]string, string)
+	IsDel(string) bool
+	DeleteURL([]string, string) bool
 	Ping() bool
 	Close() error
 }
